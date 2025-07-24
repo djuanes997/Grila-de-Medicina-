@@ -3,20 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>Malla Curricular Medicina</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
+      font-family: 'Quicksand', sans-serif;
+      background: #fff9f9;
       margin: 0;
-      color: #333;
+      color: #444;
     }
+
     h1 {
-      background: #ff5722;
-      color: white;
+      background: #e9c5f3;
+      color: #5c3c7c;
       margin: 0;
       padding: 1rem;
       text-align: center;
+      font-weight: 600;
     }
+
     .grid {
       display: flex;
       flex-wrap: nowrap;
@@ -24,59 +28,68 @@
       padding: 1rem;
       gap: 1rem;
     }
+
     .column {
-      flex: 0 0 260px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      flex: 0 0 250px;
+      background: #fdf6ff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       padding: 1rem;
+      border: 1px solid #f3ddff;
     }
+
     .column h2 {
-      color: #ff5722;
+      color: #a069c7;
       font-size: 1rem;
       margin-bottom: 0.8rem;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #e4c9f7;
+      padding-bottom: 0.3rem;
     }
+
     .subject {
       margin-bottom: 0.7rem;
       padding: 0.6rem;
-      border-radius: 6px;
-      background: #f1f1f1;
+      border-radius: 8px;
+      background: #ffeef7;
       position: relative;
       cursor: pointer;
       transition: 0.3s;
+      font-size: 0.9rem;
     }
+
     .subject:hover {
-      background: #e0eaff;
+      background: #fce7ff;
     }
+
     .subject.approved {
-      background: #c8f7c5;
-      color: #2e7d32;
+      background: #d2f4e5;
+      color: #2c8059;
       text-decoration: line-through;
     }
+
     .subject.locked {
-      background: #eee;
-      color: #999;
+      background: #f0f0f0;
+      color: #aaa;
       cursor: not-allowed;
     }
-    .requirements {
-      font-size: 0.75rem;
-      margin-top: 0.3rem;
-      color: #666;
-    }
-    .subject.locked:hover::after {
+
+    .subject.locked:hover::after,
+    .subject[data-tooltip]:hover::after {
       content: attr(data-tooltip);
       position: absolute;
       left: 100%;
       top: 50%;
       transform: translateY(-50%);
-      background: #333;
+      background: #5c3c7c;
       color: white;
-      padding: 6px 8px;
-      border-radius: 4px;
-      white-space: nowrap;
-      margin-left: 8px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      white-space: pre-wrap;
       font-size: 0.75rem;
+      width: 180px;
+      margin-left: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 10;
     }
   </style>
 </head>
@@ -115,15 +128,15 @@
       "Ciclo Clínico": [
         { name: "Medicina A (semiología - fisiopatología)", requires: ["Microbiología y Parasitología II", "Inmunología Humana", "Patología I", "Farmacología I", "Salud Mental", "Bioética I"] },
         { name: "Patología II", requires: ["Patología I Aprobada"] },
-        { name: "Salud Pública I", requires: ["Microbiología I Regular", "Medicina A Regular"] },
+        { name: "Salud Pública I", requires: ["Microbiología y Parasitología I Regular", "Medicina A (semiología - fisiopatología) Regular"] },
         { name: "Farmacología II", requires: ["Farmacología I Regular", "Salud Pública I Regular"] },
         { name: "Salud Pública II", requires: ["Salud Pública I Aprobada"] },
         { name: "Medicina Legal - Deontología Médica", requires: ["Farmacología II Aprobada"] },
         { name: "Bioética II", requires: ["Bioética I Aprobada"] },
-        { name: "Toxicología", requires: ["Medicina A Aprobada", "Patología II Aprobada"] }
+        { name: "Toxicología", requires: ["Medicina A (semiología - fisiopatología) Aprobada", "Patología II Aprobada"] }
       ],
       "Clínicas (Medicina Interna)": [
-        { name: "Medicina B (Medicina Interna)", requires: ["Medicina A Regular", "Patología II Aprobada"] },
+        { name: "Medicina B (Medicina Interna)", requires: ["Medicina A (semiología - fisiopatología) Regular", "Patología II Aprobada"] },
         { name: "Nutrición" },
         { name: "Diagnóstico por Imágenes" },
         { name: "Dermatología" },
@@ -133,7 +146,7 @@
         { name: "Psiquiatría" }
       ],
       "Quirúrgicas": [
-        { name: "Pediatría", requires: ["Medicina A Aprobada", "Patología II Aprobada"] },
+        { name: "Pediatría", requires: ["Medicina A (semiología - fisiopatología) Aprobada", "Patología II Aprobada"] },
         { name: "Obstetricia" },
         { name: "Ginecología" },
         { name: "Cirugía general" },
@@ -154,7 +167,7 @@
       ]
     };
 
-    const storageKey = "malla_medicina_aprobadas";
+    const storageKey = "malla_medicina_pastel";
     let aprobadas = JSON.parse(localStorage.getItem(storageKey)) || [];
 
     function saveProgress() {
@@ -197,15 +210,11 @@
             div.classList.add("approved");
           } else if (!allowed) {
             div.classList.add("locked");
-            div.setAttribute("data-tooltip", "Falta: " + mat.requires.filter(r => !isAprobada(r) && !isRegular(r)).join(", "));
           }
 
-          // Requisitos visibles
+          // Mostrar tooltip con correlativas
           if (mat.requires) {
-            const req = document.createElement("div");
-            req.className = "requirements";
-            req.textContent = "📎 Requiere: " + mat.requires.join(", ");
-            div.appendChild(req);
+            div.setAttribute("data-tooltip", "📎 Requiere:\n" + mat.requires.join("\n"));
           }
 
           div.addEventListener("click", () => {
@@ -231,4 +240,3 @@
   </script>
 </body>
 </html>
-
