@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Malla Curricular Medicina</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Quicksand', sans-serif;
@@ -21,21 +21,24 @@
       font-weight: 600;
     }
 
+    /* Cambié de flex a grid con varias filas */
     .grid {
-      display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      padding: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1rem;
+      padding: 1rem;
+      max-width: 1200px;
+      margin: auto;
     }
 
     .column {
-      flex: 0 0 250px;
       background: #fdf6ff;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       padding: 1rem;
       border: 1px solid #f3ddff;
+      display: flex;
+      flex-direction: column;
     }
 
     .column h2 {
@@ -44,6 +47,7 @@
       margin-bottom: 0.8rem;
       border-bottom: 1px solid #e4c9f7;
       padding-bottom: 0.3rem;
+      text-align: center;
     }
 
     .subject {
@@ -55,6 +59,7 @@
       cursor: pointer;
       transition: 0.3s;
       font-size: 0.9rem;
+      user-select: none;
     }
 
     .subject:hover {
@@ -73,6 +78,7 @@
       cursor: not-allowed;
     }
 
+    /* Tooltip */
     .subject.locked:hover::after,
     .subject[data-tooltip]:hover::after {
       content: attr(data-tooltip);
@@ -108,35 +114,35 @@
         { name: "Biología e Int. Biología Celular" }
       ],
       "Ciclo Biomédico - Primer Año": [
-        { name: "Anatomía", requires: ["CBC"] },
-        { name: "Histología - Biología Celular - Genética", requires: ["CBC"] },
-        { name: "Salud Mental", requires: ["CBC"] },
-        { name: "Bioética I", requires: ["CBC"] },
-        { name: "Medicina Familiar", requires: ["CBC"] }
+        { name: "Anatomía", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+        { name: "Histología - Biología Celular - Genética", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+        { name: "Salud Mental", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+        { name: "Bioética I", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+        { name: "Medicina Familiar", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] }
       ],
       "Ciclo Biomédico - Segundo Año": [
         { name: "Química Biológica", requires: ["Anatomía", "Histología - Biología Celular - Genética"] },
         { name: "Fisiología y Biofísica", requires: ["Anatomía", "Histología - Biología Celular - Genética"] }
       ],
       "Ciclo Biomédico - Tercer Año": [
-        { name: "Microbiología y Parasitología I", requires: ["Fisiología y Biofísica Regular", "Química Biológica Aprobada"] },
-        { name: "Inmunología Humana", requires: ["Fisiología y Biofísica Regular", "Química Biológica Aprobada"] },
-        { name: "Microbiología y Parasitología II", requires: ["Microbiología y Parasitología I Aprobada"] },
-        { name: "Patología I", requires: ["Fisiología y Biofísica Aprobada", "Química Biológica Aprobada"] },
-        { name: "Farmacología I", requires: ["Fisiología y Biofísica Aprobada", "Química Biológica Aprobada"] }
+        { name: "Microbiología y Parasitología I", requires: ["Fisiología y Biofísica", "Química Biológica"] },
+        { name: "Inmunología Humana", requires: ["Fisiología y Biofísica", "Química Biológica"] },
+        { name: "Microbiología y Parasitología II", requires: ["Microbiología y Parasitología I"] },
+        { name: "Patología I", requires: ["Fisiología y Biofísica", "Química Biológica"] },
+        { name: "Farmacología I", requires: ["Fisiología y Biofísica", "Química Biológica"] }
       ],
       "Ciclo Clínico": [
         { name: "Medicina A (semiología - fisiopatología)", requires: ["Microbiología y Parasitología II", "Inmunología Humana", "Patología I", "Farmacología I", "Salud Mental", "Bioética I"] },
-        { name: "Patología II", requires: ["Patología I Aprobada"] },
-        { name: "Salud Pública I", requires: ["Microbiología y Parasitología I Regular", "Medicina A (semiología - fisiopatología) Regular"] },
-        { name: "Farmacología II", requires: ["Farmacología I Regular", "Salud Pública I Regular"] },
-        { name: "Salud Pública II", requires: ["Salud Pública I Aprobada"] },
-        { name: "Medicina Legal - Deontología Médica", requires: ["Farmacología II Aprobada"] },
-        { name: "Bioética II", requires: ["Bioética I Aprobada"] },
-        { name: "Toxicología", requires: ["Medicina A (semiología - fisiopatología) Aprobada", "Patología II Aprobada"] }
+        { name: "Patología II", requires: ["Patología I"] },
+        { name: "Salud Pública I", requires: ["Microbiología y Parasitología I", "Medicina A (semiología - fisiopatología)"] },
+        { name: "Farmacología II", requires: ["Farmacología I", "Salud Pública I"] },
+        { name: "Salud Pública II", requires: ["Salud Pública I"] },
+        { name: "Medicina Legal - Deontología Médica", requires: ["Farmacología II"] },
+        { name: "Bioética II", requires: ["Bioética I"] },
+        { name: "Toxicología", requires: ["Medicina A (semiología - fisiopatología)", "Patología II"] }
       ],
       "Clínicas (Medicina Interna)": [
-        { name: "Medicina B (Medicina Interna)", requires: ["Medicina A (semiología - fisiopatología) Regular", "Patología II Aprobada"] },
+        { name: "Medicina B (Medicina Interna)", requires: ["Medicina A (semiología - fisiopatología)", "Patología II"] },
         { name: "Nutrición" },
         { name: "Diagnóstico por Imágenes" },
         { name: "Dermatología" },
@@ -146,7 +152,7 @@
         { name: "Psiquiatría" }
       ],
       "Quirúrgicas": [
-        { name: "Pediatría", requires: ["Medicina A (semiología - fisiopatología) Aprobada", "Patología II Aprobada"] },
+        { name: "Pediatría", requires: ["Medicina A (semiología - fisiopatología)", "Patología II"] },
         { name: "Obstetricia" },
         { name: "Ginecología" },
         { name: "Cirugía general" },
@@ -178,13 +184,11 @@
       return aprobadas.includes(name);
     }
 
-    function isRegular(name) {
-      return isAprobada(name) || name.includes("Regular");
-    }
-
+    // NUEVO: Solo desbloquear si todas las correlativas están aprobadas
     function checkRequirements(requires) {
       if (!requires) return true;
-      return requires.every(req => isAprobada(req) || isRegular(req));
+      // Todas deben estar aprobadas para desbloquear
+      return requires.every(req => isAprobada(req));
     }
 
     function render() {
@@ -212,7 +216,7 @@
             div.classList.add("locked");
           }
 
-          // Mostrar tooltip con correlativas
+          // Tooltip con correlativas
           if (mat.requires) {
             div.setAttribute("data-tooltip", "📎 Requiere:\n" + mat.requires.join("\n"));
           }
