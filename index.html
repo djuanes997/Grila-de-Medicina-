@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Malla Curricular Medicina</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      background: #5a8dee;
+      color: white;
+      padding: 1rem;
+      margin: 0;
+    }
+
+    .grid {
+      display: flex;
+      overflow-x: auto;
+      padding: 2rem;
+      gap: 1rem;
+    }
+
+    .column {
+      flex: 0 0 250px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 1rem;
+    }
+
+    .column h2 {
+      font-size: 1.1rem;
+      color: #5a8dee;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .subject {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+      position: relative;
+    }
+
+    .subject:hover {
+      background: #eef4ff;
+    }
+
+    .subject.approved {
+      background: #c8f7c5;
+      text-decoration: line-through;
+      color: #2e7d32;
+    }
+
+    .subject.locked {
+      background: #f0f0f0;
+      color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .subject.locked::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #333;
+      color: #fff;
+      padding: 5px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      font-size: 0.8rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+      margin-left: 8px;
+    }
+
+    .subject.locked:hover::after {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Malla Curricular - Medicina</h1>
+  <div class="grid" id="malla"></div>
+
+  <script>
+    const data = {
+      "CBC": [
+        "Introduccion al pensamiento cientifico",
+        "Introduccion al conocimiento de la sociedad y el estado",
+        "Quimica",
+        "Fisica e introduccion a la Biofisica",
+        "Matematicas",
+        "Biologia e introduccion a la Biologia Celular"
+      ],
+      "Ciclo Biomedico - 1er Año": [
+        { name: "Anatomia", requires: ["CBC"] },
+        { name: "Histologia, Embriologia, Biologia Celular y Genetica", requires: ["CBC"] },
+        { name: "Salud Mental", requires: ["CBC"] },
+        { name: "Bioetica 1", requires: ["CBC"] },
+        { name: "Medicina familiar 1", requires: ["CBC"] }
+      ],
+      "Ciclo Biomedico - 2do Año": [
+        "Bioquimica",
+        "Fisiologia y Biofisica"
+      ],
+      "Ciclo Biomedico - 3er Año": [
+        "Microbiologia y parasitologia 1",
+        "Microbiologia y parasitologia 2",
+        "Patologia 1",
+        "Inmunologia",
+        "Farmacologia 1"
+      ],
+      "Ciclo Clínico": [
+        "Semiologia",
+        "Patologia 2",
+        "Salud Publica 1",
+        "Farmacologia 2",
+        "Salud Publica 2",
+        "Medicina Legal",
+        "Bioetica 2",
+        "Toxicologia"
+      ],
+      "Clínicas - Medicina Interna": [
+        "Nutricion",
+        "Diagnostico por imagenes",
+        "Dermatologia",
+        "Infectologia",
+        "Neumonologia",
+        "Neurologia",
+        "Psiquiatria"
+      ],
+      "Clínicas - Quirurgicas": [
+        "Pediatria",
+        "Obstetricia",
+        "Ginecologia",
+        "Cirugia General",
+        "Urologia",
+        "Traumatologia",
+        "Oftalmologia",
+        "Otorrinolaringologia",
+        "Neurocirugia"
+      ],
+      "Internado Anual Rotatorio": [
+        "Clinica Medica",
+        "Cirugia",
+        "Tocoginecologia",
+        "Pediatria",
+        "Salud Mental",
+        "APS",
+        "Modulo especifico/ Curso de residencia"
+      ]
+    };
+
+    const storageKey = "malla_med_aprobadas";
+    let aprobadas = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+    function saveProgress() {
+      localStorage.setItem(storageKey, JSON.stringify(aprobadas));
+    }
+
+    function render() {
+      const container = document.getElementById("malla");
+      container.innerHTML = "";
+
+      const aprobadasSet = new Set(aprobadas);
+
+      for (const ciclo in data) {
+        const col = document.createElement("div");
+        col.className = "column";
+        const h2 = document.createElement("h2");
+        h2.textContent = ciclo;
+        col.appendChild(h2);
+
+        const materias = data[ciclo];
+
+        for (const mat of materias) {
+          const subjectName = typeof mat === "string" ? mat : mat.name;
+          const requires = typeof mat === "string" ? [] : mat.requires;
+
+          const div = document.createElement("div");
+          div.className = "subject";
+          div.textContent = subjectName;
+
+          if (aprobadasSet.has(subjectName)) {
+            div.classList.add("approved");
+          } else if (
+            requires.length &&
+            !requires.every(req =>
+              req === "CBC"
+                ? Object.keys(data["CBC"]).every(c => aprobadasSet.has(data["CBC"][c]))
+                : data[req] && data[req].every(m =>
+                    typeof m === "string"
+                      ? aprobadasSet.has(m)
+                      : aprobadasSet.has(m.name)
+                  )
+            )
+          ) {
+            div.classList.add("locked");
+            const faltantes = requires.filter(req => {
+              if (req === "CBC") {
+                return !data["CBC"].every(m => aprobadasSet.has(m));
+              }
+              return (
+                !data[req] ||
+                !data[req].every(m =>
+                  typeof m === "string"
+                    ? aprobadasSet.has(m)
+                    : aprobadasSet.has(m.name)
+                )
+              );
+            });
+            div.setAttribute("data-tooltip", "Falta: " + faltantes.join(", "));
+          }
+
+          div.addEventListener("click", () => {
+            if (div.classList.contains("locked")) return;
+
+            if (aprobadasSet.has(subjectName)) {
+              aprobadas = aprobadas.filter(x => x !== subjectName);
+            } else {
+              aprobadas.push(subjectName);
+            }
+            saveProgress();
+            render();
+          });
+
+          col.appendChild(div);
+        }
+
+        container.appendChild(col);
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
