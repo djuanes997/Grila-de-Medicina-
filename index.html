@@ -1,93 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Malla Curricular Medicina</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      margin: 0;
       background: #f9f9f9;
+      margin: 0;
       color: #333;
     }
-
     h1 {
-      text-align: center;
-      background: #5a8dee;
+      background: #ff5722;
       color: white;
-      padding: 1rem;
       margin: 0;
+      padding: 1rem;
+      text-align: center;
     }
-
     .grid {
       display: flex;
+      flex-wrap: nowrap;
       overflow-x: auto;
-      padding: 2rem;
+      padding: 1rem;
       gap: 1rem;
     }
-
     .column {
-      flex: 0 0 250px;
+      flex: 0 0 260px;
       background: #fff;
-      border-radius: 10px;
+      border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       padding: 1rem;
     }
-
     .column h2 {
-      font-size: 1.1rem;
-      color: #5a8dee;
+      color: #ff5722;
+      font-size: 1rem;
+      margin-bottom: 0.8rem;
       border-bottom: 1px solid #ddd;
-      padding-bottom: 0.5rem;
-      margin-bottom: 1rem;
     }
-
     .subject {
-      margin: 0.5rem 0;
-      padding: 0.5rem;
+      margin-bottom: 0.7rem;
+      padding: 0.6rem;
       border-radius: 6px;
+      background: #f1f1f1;
+      position: relative;
       cursor: pointer;
       transition: 0.3s;
-      position: relative;
     }
-
     .subject:hover {
-      background: #eef4ff;
+      background: #e0eaff;
     }
-
     .subject.approved {
       background: #c8f7c5;
-      text-decoration: line-through;
       color: #2e7d32;
+      text-decoration: line-through;
     }
-
     .subject.locked {
-      background: #f0f0f0;
-      color: #aaa;
+      background: #eee;
+      color: #999;
       cursor: not-allowed;
     }
-
-    .subject.locked::after {
+    .requirements {
+      font-size: 0.75rem;
+      margin-top: 0.3rem;
+      color: #666;
+    }
+    .subject.locked:hover::after {
       content: attr(data-tooltip);
       position: absolute;
       left: 100%;
       top: 50%;
       transform: translateY(-50%);
       background: #333;
-      color: #fff;
-      padding: 5px 8px;
+      color: white;
+      padding: 6px 8px;
       border-radius: 4px;
       white-space: nowrap;
-      font-size: 0.8rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: 0.3s;
       margin-left: 8px;
-    }
-
-    .subject.locked:hover::after {
-      opacity: 1;
+      font-size: 0.75rem;
     }
   </style>
 </head>
@@ -96,142 +85,136 @@
   <div class="grid" id="malla"></div>
 
   <script>
-    const data = {
+    const materias = {
       "CBC": [
-        "Introduccion al pensamiento cientifico",
-        "Introduccion al conocimiento de la sociedad y el estado",
-        "Quimica",
-        "Fisica e introduccion a la Biofisica",
-        "Matematicas",
-        "Biologia e introduccion a la Biologia Celular"
+        { name: "Química" },
+        { name: "Int. Con. Sociedad y Estado" },
+        { name: "Int. Pensamiento Científico" },
+        { name: "Matemática" },
+        { name: "Física e Int. Biofísica" },
+        { name: "Biología e Int. Biología Celular" }
       ],
-      "Ciclo Biomedico - 1er Año": [
-        { name: "Anatomia", requires: ["CBC"] },
-        { name: "Histologia, Embriologia, Biologia Celular y Genetica", requires: ["CBC"] },
+      "Ciclo Biomédico - Primer Año": [
+        { name: "Anatomía", requires: ["CBC"] },
+        { name: "Histología - Biología Celular - Genética", requires: ["CBC"] },
         { name: "Salud Mental", requires: ["CBC"] },
-        { name: "Bioetica 1", requires: ["CBC"] },
-        { name: "Medicina familiar 1", requires: ["CBC"] }
+        { name: "Bioética I", requires: ["CBC"] },
+        { name: "Medicina Familiar", requires: ["CBC"] }
       ],
-      "Ciclo Biomedico - 2do Año": [
-        "Bioquimica",
-        "Fisiologia y Biofisica"
+      "Ciclo Biomédico - Segundo Año": [
+        { name: "Química Biológica", requires: ["Anatomía", "Histología - Biología Celular - Genética"] },
+        { name: "Fisiología y Biofísica", requires: ["Anatomía", "Histología - Biología Celular - Genética"] }
       ],
-      "Ciclo Biomedico - 3er Año": [
-        "Microbiologia y parasitologia 1",
-        "Microbiologia y parasitologia 2",
-        "Patologia 1",
-        "Inmunologia",
-        "Farmacologia 1"
+      "Ciclo Biomédico - Tercer Año": [
+        { name: "Microbiología y Parasitología I", requires: ["Fisiología y Biofísica Regular", "Química Biológica Aprobada"] },
+        { name: "Inmunología Humana", requires: ["Fisiología y Biofísica Regular", "Química Biológica Aprobada"] },
+        { name: "Microbiología y Parasitología II", requires: ["Microbiología y Parasitología I Aprobada"] },
+        { name: "Patología I", requires: ["Fisiología y Biofísica Aprobada", "Química Biológica Aprobada"] },
+        { name: "Farmacología I", requires: ["Fisiología y Biofísica Aprobada", "Química Biológica Aprobada"] }
       ],
       "Ciclo Clínico": [
-        "Semiologia",
-        "Patologia 2",
-        "Salud Publica 1",
-        "Farmacologia 2",
-        "Salud Publica 2",
-        "Medicina Legal",
-        "Bioetica 2",
-        "Toxicologia"
+        { name: "Medicina A (semiología - fisiopatología)", requires: ["Microbiología y Parasitología II", "Inmunología Humana", "Patología I", "Farmacología I", "Salud Mental", "Bioética I"] },
+        { name: "Patología II", requires: ["Patología I Aprobada"] },
+        { name: "Salud Pública I", requires: ["Microbiología I Regular", "Medicina A Regular"] },
+        { name: "Farmacología II", requires: ["Farmacología I Regular", "Salud Pública I Regular"] },
+        { name: "Salud Pública II", requires: ["Salud Pública I Aprobada"] },
+        { name: "Medicina Legal - Deontología Médica", requires: ["Farmacología II Aprobada"] },
+        { name: "Bioética II", requires: ["Bioética I Aprobada"] },
+        { name: "Toxicología", requires: ["Medicina A Aprobada", "Patología II Aprobada"] }
       ],
-      "Clínicas - Medicina Interna": [
-        "Nutricion",
-        "Diagnostico por imagenes",
-        "Dermatologia",
-        "Infectologia",
-        "Neumonologia",
-        "Neurologia",
-        "Psiquiatria"
+      "Clínicas (Medicina Interna)": [
+        { name: "Medicina B (Medicina Interna)", requires: ["Medicina A Regular", "Patología II Aprobada"] },
+        { name: "Nutrición" },
+        { name: "Diagnóstico por Imágenes" },
+        { name: "Dermatología" },
+        { name: "Infectología" },
+        { name: "Neumonología" },
+        { name: "Neurología" },
+        { name: "Psiquiatría" }
       ],
-      "Clínicas - Quirurgicas": [
-        "Pediatria",
-        "Obstetricia",
-        "Ginecologia",
-        "Cirugia General",
-        "Urologia",
-        "Traumatologia",
-        "Oftalmologia",
-        "Otorrinolaringologia",
-        "Neurocirugia"
+      "Quirúrgicas": [
+        { name: "Pediatría", requires: ["Medicina A Aprobada", "Patología II Aprobada"] },
+        { name: "Obstetricia" },
+        { name: "Ginecología" },
+        { name: "Cirugía general" },
+        { name: "Urología" },
+        { name: "Ortopedia - Traumatología" },
+        { name: "Oftalmología" },
+        { name: "Otorrinolaringología" },
+        { name: "Neurocirugía" }
       ],
-      "Internado Anual Rotatorio": [
-        "Clinica Medica",
-        "Cirugia",
-        "Tocoginecologia",
-        "Pediatria",
-        "Salud Mental",
-        "APS",
-        "Modulo especifico/ Curso de residencia"
+      "Ciclo Internado Anual Rotatorio": [
+        { name: "Clínica Médica" },
+        { name: "Cirugía" },
+        { name: "Tocoginecología" },
+        { name: "Pediatría" },
+        { name: "Salud Mental" },
+        { name: "APS" },
+        { name: "Módulo Específico / Curso de Residencia" }
       ]
     };
 
-    const storageKey = "malla_med_aprobadas";
+    const storageKey = "malla_medicina_aprobadas";
     let aprobadas = JSON.parse(localStorage.getItem(storageKey)) || [];
 
     function saveProgress() {
       localStorage.setItem(storageKey, JSON.stringify(aprobadas));
     }
 
+    function isAprobada(name) {
+      return aprobadas.includes(name);
+    }
+
+    function isRegular(name) {
+      return isAprobada(name) || name.includes("Regular");
+    }
+
+    function checkRequirements(requires) {
+      if (!requires) return true;
+      return requires.every(req => isAprobada(req) || isRegular(req));
+    }
+
     function render() {
       const container = document.getElementById("malla");
       container.innerHTML = "";
 
-      const aprobadasSet = new Set(aprobadas);
-
-      for (const ciclo in data) {
+      for (const ciclo in materias) {
         const col = document.createElement("div");
         col.className = "column";
         const h2 = document.createElement("h2");
         h2.textContent = ciclo;
         col.appendChild(h2);
 
-        const materias = data[ciclo];
-
-        for (const mat of materias) {
-          const subjectName = typeof mat === "string" ? mat : mat.name;
-          const requires = typeof mat === "string" ? [] : mat.requires;
-
+        for (const mat of materias[ciclo]) {
           const div = document.createElement("div");
           div.className = "subject";
-          div.textContent = subjectName;
+          div.textContent = mat.name;
 
-          if (aprobadasSet.has(subjectName)) {
+          const approved = isAprobada(mat.name);
+          const allowed = checkRequirements(mat.requires);
+
+          if (approved) {
             div.classList.add("approved");
-          } else if (
-            requires.length &&
-            !requires.every(req =>
-              req === "CBC"
-                ? Object.keys(data["CBC"]).every(c => aprobadasSet.has(data["CBC"][c]))
-                : data[req] && data[req].every(m =>
-                    typeof m === "string"
-                      ? aprobadasSet.has(m)
-                      : aprobadasSet.has(m.name)
-                  )
-            )
-          ) {
+          } else if (!allowed) {
             div.classList.add("locked");
-            const faltantes = requires.filter(req => {
-              if (req === "CBC") {
-                return !data["CBC"].every(m => aprobadasSet.has(m));
-              }
-              return (
-                !data[req] ||
-                !data[req].every(m =>
-                  typeof m === "string"
-                    ? aprobadasSet.has(m)
-                    : aprobadasSet.has(m.name)
-                )
-              );
-            });
-            div.setAttribute("data-tooltip", "Falta: " + faltantes.join(", "));
+            div.setAttribute("data-tooltip", "Falta: " + mat.requires.filter(r => !isAprobada(r) && !isRegular(r)).join(", "));
+          }
+
+          // Requisitos visibles
+          if (mat.requires) {
+            const req = document.createElement("div");
+            req.className = "requirements";
+            req.textContent = "📎 Requiere: " + mat.requires.join(", ");
+            div.appendChild(req);
           }
 
           div.addEventListener("click", () => {
             if (div.classList.contains("locked")) return;
 
-            if (aprobadasSet.has(subjectName)) {
-              aprobadas = aprobadas.filter(x => x !== subjectName);
+            if (approved) {
+              aprobadas = aprobadas.filter(x => x !== mat.name);
             } else {
-              aprobadas.push(subjectName);
+              aprobadas.push(mat.name);
             }
             saveProgress();
             render();
@@ -248,3 +231,4 @@
   </script>
 </body>
 </html>
+
