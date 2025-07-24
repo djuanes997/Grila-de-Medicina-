@@ -21,7 +21,6 @@
       font-weight: 600;
     }
 
-    /* Cambié de flex a grid con varias filas */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -78,7 +77,6 @@
       cursor: not-allowed;
     }
 
-    /* Tooltip */
     .subject.locked:hover::after,
     .subject[data-tooltip]:hover::after {
       content: attr(data-tooltip);
@@ -167,7 +165,7 @@
         { name: "Cirugía" },
         { name: "Tocoginecología" },
         { name: "Pediatría" },
-        { name: "Salud Mental" },
+        { name: "S. Mental" },  // Aquí el cambio
         { name: "APS" },
         { name: "Módulo Específico / Curso de Residencia" }
       ]
@@ -184,10 +182,8 @@
       return aprobadas.includes(name);
     }
 
-    // NUEVO: Solo desbloquear si todas las correlativas están aprobadas
     function checkRequirements(requires) {
       if (!requires) return true;
-      // Todas deben estar aprobadas para desbloquear
       return requires.every(req => isAprobada(req));
     }
 
@@ -216,7 +212,6 @@
             div.classList.add("locked");
           }
 
-          // Tooltip con correlativas
           if (mat.requires) {
             div.setAttribute("data-tooltip", "📎 Requiere:\n" + mat.requires.join("\n"));
           }
