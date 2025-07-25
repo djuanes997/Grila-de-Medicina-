@@ -1,284 +1,176 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Mi progreso en FMED</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Dancing+Script&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background: #fff9f9;
-      margin: 0;
-      color: #444;
-      transition: background 0.3s, color 0.3s;
+<script>
+  const materias = {
+    "CBC": [
+      { name: "Química" },
+      { name: "Int. Con. Sociedad y Estado" },
+      { name: "Int. Pensamiento Científico" },
+      { name: "Matemática" },
+      { name: "Física e Int. Biofísica" },
+      { name: "Biología e Int. Biología Celular" }
+    ],
+    "Ciclo Biomédico - Primer Año": [
+      { name: "Anatomía", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+      { name: "Histología - Biología Celular - Genética", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+      { name: "Salud Mental", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+      { name: "Bioética I", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+      { name: "Medicina Familiar", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] }
+    ],
+    "Ciclo Biomédico - Segundo Año": [
+      { name: "Química Biológica", requires: ["Anatomía", "Histología - Biología Celular - Genética"] },
+      { name: "Fisiología y Biofísica", requires: ["Anatomía", "Histología - Biología Celular - Genética"] }
+    ],
+    "Ciclo Biomédico - Tercer Año": [
+      { name: "Microbiología y Parasitología I", requires: ["Fisiología y Biofísica", "Química Biológica"] },
+      { name: "Inmunología Humana", requires: ["Fisiología y Biofísica", "Química Biológica"] },
+      { name: "Microbiología y Parasitología II", requires: ["Microbiología y Parasitología I"] },
+      { name: "Patología I", requires: ["Fisiología y Biofísica", "Química Biológica"] },
+      { name: "Farmacología I", requires: ["Fisiología y Biofísica", "Química Biológica"] }
+    ],
+    "Ciclo Clínico": [
+      { name: "Medicina A (semiología - fisiopatología)", requires: ["Microbiología y Parasitología II", "Inmunología Humana", "Patología I", "Farmacología I", "Salud Mental", "Bioética I"] },
+      { name: "Patología II", requires: ["Patología I"] },
+      { name: "Salud Pública I", requires: ["Microbiología y Parasitología I", "Medicina A (semiología - fisiopatología)"] },
+      { name: "Farmacología II", requires: ["Farmacología I", "Salud Pública I"] },
+      { name: "Salud Pública II", requires: ["Salud Pública I"] },
+      { name: "Medicina Legal - Deontología Médica", requires: ["Farmacología II"] },
+      { name: "Bioética II", requires: ["Bioética I"] },
+      { name: "Toxicología", requires: ["Medicina A (semiología - fisiopatología)", "Patología II"] }
+    ],
+    "Clínicas (Medicina Interna)": [
+      { name: "Medicina B (Medicina Interna)", requires: ["Medicina A (semiología - fisiopatología)", "Patología II"] },
+      { name: "Nutrición" },
+      { name: "Diagnóstico por Imágenes" },
+      { name: "Dermatología" },
+      { name: "Infectología" },
+      { name: "Neumonología" },
+      { name: "Neurología" },
+      { name: "Psiquiatría" }
+    ],
+    "Quirúrgicas": [
+      { name: "Pediatría", requires: ["Medicina A (semiología - fisiopatología)", "Patología II"] },
+      { name: "Obstetricia" },
+      { name: "Ginecología" },
+      { name: "Cirugía general" },
+      { name: "Urología" },
+      { name: "Ortopedia - Traumatología" },
+      { name: "Oftalmología" },
+      { name: "Otorrinolaringología" },
+      { name: "Neurocirugía" }
+    ],
+    "Ciclo Internado Anual Rotatorio": [
+      { name: "Clínica Médica" },
+      { name: "Cirugía" },
+      { name: "Tocoginecología" },
+      { name: "Pediatría" },
+      { name: "S. Mental" },
+      { name: "APS" },
+      { name: "Módulo Específico / Curso de Residencia" }
+    ]
+  };
+
+  const storageKey = "malla_medicina_pastel";
+  const modeKey = "modo_oscuro_medicina";
+  let aprobadas = [];
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.has("aprobadas")) {
+    aprobadas = decodeURIComponent(params.get("aprobadas")).split(",");
+  } else {
+    aprobadas = JSON.parse(localStorage.getItem(storageKey)) || [];
+  }
+
+  function saveProgress() {
+    localStorage.setItem(storageKey, JSON.stringify(aprobadas));
+    const encoded = encodeURIComponent(aprobadas.join(","));
+    const newUrl = `${window.location.pathname}?aprobadas=${encoded}`;
+    history.replaceState(null, "", newUrl);
+  }
+
+  function isAprobada(name) {
+    return aprobadas.includes(name);
+  }
+
+  function checkRequirements(requires) {
+    if (!requires) return true;
+    return requires.every(req => isAprobada(req));
+  }
+
+  function updateProgressBar() {
+    const total = Object.values(materias).flat().length;
+    const completed = aprobadas.length;
+    const percentage = (completed / total) * 100;
+    document.getElementById("progressBar").style.width = `${percentage}%`;
+
+    if (!document.getElementById("progressText")) {
+      const p = document.createElement("p");
+      p.id = "progressText";
+      p.style.margin = "0.5rem 0 0 1rem";
+      p.style.fontWeight = "600";
+      p.style.fontSize = "0.9rem";
+      document.querySelector(".controls").prepend(p);
     }
 
-    body.dark-mode {
-      background: #1e1e1e;
-      color: #eee;
-    }
+    document.getElementById("progressText").textContent = `${completed} / ${total} materias aprobadas`;
+  }
 
-    h1 {
-      font-family: 'Dancing Script', cursive;
-      font-size: 2.5rem;
-      background: #e9c5f3;
-      color: #5c3c7c;
-      margin: 0;
-      padding: 1rem;
-      text-align: center;
-      font-weight: 400;
-    }
+  function render() {
+    const container = document.getElementById("malla");
+    container.innerHTML = "";
 
-    body.dark-mode h1 {
-      background: #3d2b47;
-      color: #f1d2ff;
-    }
+    for (const ciclo in materias) {
+      const col = document.createElement("div");
+      col.className = "column";
+      const h2 = document.createElement("h2");
+      h2.textContent = ciclo;
+      col.appendChild(h2);
 
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem 1rem;
-      background: #fbeaff;
-    }
+      for (const mat of materias[ciclo]) {
+        const div = document.createElement("div");
+        div.className = "subject";
+        div.textContent = mat.name;
 
-    body.dark-mode .controls {
-      background: #2a2a2a;
-    }
+        const approved = isAprobada(mat.name);
+        const allowed = checkRequirements(mat.requires);
 
-    .mode-toggle {
-      background: #d8a9ff;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      color: #fff;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    .mode-toggle:hover {
-      background: #c07de6;
-    }
-
-    .progress-bar-container {
-      width: 100%;
-      background: #eee;
-      height: 20px;
-      border-radius: 10px;
-      margin: 1rem auto;
-      max-width: 600px;
-      overflow: hidden;
-    }
-
-    body.dark-mode .progress-bar-container {
-      background: #444;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(90deg, #ce6cfd, #94f3c3);
-      transition: width 0.5s ease;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    .column {
-      background: #fdf6ff;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      padding: 1rem;
-      border: 1px solid #f3ddff;
-      display: flex;
-      flex-direction: column;
-    }
-
-    body.dark-mode .column {
-      background: #2e2e2e;
-      border-color: #555;
-      box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
-    }
-
-    .column h2 {
-      color: #a069c7;
-      font-size: 1rem;
-      margin-bottom: 0.8rem;
-      border-bottom: 1px solid #e4c9f7;
-      padding-bottom: 0.3rem;
-      text-align: center;
-    }
-
-    .subject {
-      margin-bottom: 0.7rem;
-      padding: 0.6rem;
-      border-radius: 8px;
-      background: #ffeef7;
-      position: relative;
-      cursor: pointer;
-      transition: 0.3s;
-      font-size: 0.9rem;
-      user-select: none;
-    }
-
-    .subject:hover {
-      background: #fce7ff;
-    }
-
-    .subject.approved {
-      background: #d2f4e5;
-      color: #2c8059;
-      text-decoration: line-through;
-    }
-
-    .subject.locked {
-      background: #f0f0f0;
-      color: #aaa;
-      cursor: not-allowed;
-    }
-
-    .subject.locked:hover::after,
-    .subject[data-tooltip]:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      left: 100%;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #5c3c7c;
-      color: white;
-      padding: 6px 10px;
-      border-radius: 8px;
-      white-space: pre-wrap;
-      font-size: 0.75rem;
-      width: 180px;
-      margin-left: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      z-index: 10;
-    }
-  </style>
-</head>
-<body>
-  <h1>Mi progreso en FMED</h1>
-
-  <!-- NUEVO: controles -->
-  <div class="controls">
-    <div class="progress-bar-container">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-    <button class="mode-toggle" onclick="toggleMode()">🌓 Modo oscuro</button>
-  </div>
-
-  <div class="grid" id="malla"></div>
-
-  <script>
-    const materias = {
-      // (misma estructura que ya tenés, no la repito para ahorrar espacio)
-      // ...
-    };
-
-    const storageKey = "malla_medicina_pastel";
-    const modeKey = "modo_oscuro_medicina";
-    let aprobadas = [];
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.has("aprobadas")) {
-      aprobadas = decodeURIComponent(params.get("aprobadas")).split(",");
-    } else {
-      aprobadas = JSON.parse(localStorage.getItem(storageKey)) || [];
-    }
-
-    function saveProgress() {
-      localStorage.setItem(storageKey, JSON.stringify(aprobadas));
-      const encoded = encodeURIComponent(aprobadas.join(","));
-      const newUrl = `${window.location.pathname}?aprobadas=${encoded}`;
-      history.replaceState(null, "", newUrl);
-    }
-
-    function isAprobada(name) {
-      return aprobadas.includes(name);
-    }
-
-    function checkRequirements(requires) {
-      if (!requires) return true;
-      return requires.every(req => isAprobada(req));
-    }
-
-    function updateProgressBar() {
-      const total = Object.values(materias).flat().length;
-      const completed = aprobadas.length;
-      const percentage = (completed / total) * 100;
-      document.getElementById("progressBar").style.width = `${percentage}%`;
-    }
-
-    function render() {
-      const container = document.getElementById("malla");
-      container.innerHTML = "";
-
-      for (const ciclo in materias) {
-        const col = document.createElement("div");
-        col.className = "column";
-        const h2 = document.createElement("h2");
-        h2.textContent = ciclo;
-        col.appendChild(h2);
-
-        for (const mat of materias[ciclo]) {
-          const div = document.createElement("div");
-          div.className = "subject";
-          div.textContent = mat.name;
-
-          const approved = isAprobada(mat.name);
-          const allowed = checkRequirements(mat.requires);
-
-          if (approved) {
-            div.classList.add("approved");
-          } else if (!allowed) {
-            div.classList.add("locked");
-          }
-
-          if (mat.requires) {
-            div.setAttribute("data-tooltip", "📎 Requiere:\n" + mat.requires.join("\n"));
-          }
-
-          div.addEventListener("click", () => {
-            if (div.classList.contains("locked")) return;
-
-            if (approved) {
-              aprobadas = aprobadas.filter(x => x !== mat.name);
-            } else {
-              aprobadas.push(mat.name);
-            }
-            saveProgress();
-            render();
-          });
-
-          col.appendChild(div);
+        if (approved) {
+          div.classList.add("approved");
+        } else if (!allowed) {
+          div.classList.add("locked");
         }
 
-        container.appendChild(col);
+        if (mat.requires) {
+          div.setAttribute("data-tooltip", "📎 Requiere:\n" + mat.requires.join("\n"));
+        }
+
+        div.addEventListener("click", () => {
+          if (div.classList.contains("locked")) return;
+
+          if (approved) {
+            aprobadas = aprobadas.filter(x => x !== mat.name);
+          } else {
+            aprobadas.push(mat.name);
+          }
+          saveProgress();
+          render();
+        });
+
+        col.appendChild(div);
       }
 
-      updateProgressBar();
+      container.appendChild(col);
     }
 
-    // MODO OSCURO
-    function toggleMode() {
-      document.body.classList.toggle("dark-mode");
-      localStorage.setItem(modeKey, document.body.classList.contains("dark-mode"));
-    }
+    updateProgressBar();
+  }
 
-    // Restaurar modo oscuro si ya estaba activo
-    if (localStorage.getItem(modeKey) === "true") {
-      document.body.classList.add("dark-mode");
-    }
+  function toggleMode() {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem(modeKey, document.body.classList.contains("dark-mode"));
+  }
 
-    render();
-  </script>
-</body>
-</html>
+  if (localStorage.getItem(modeKey) === "true") {
+    document.body.classList.add("dark-mode");
+  }
+
+  render();
+</script>
