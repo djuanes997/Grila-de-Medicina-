@@ -2,283 +2,255 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mi progreso en FMED</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Dancing+Script&display=swap" rel="stylesheet" />
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f8f4ff;
-      color: #333;
+      font-family: 'Quicksand', sans-serif;
+      background: #fff9f9;
       margin: 0;
-      padding: 1rem;
-      transition: background-color 0.3s, color 0.3s;
+      color: #444;
     }
 
     h1 {
-      font-family: cursive;
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.5rem;
+      background: #e9c5f3;
+      color: #5c3c7c;
+      margin: 0;
+      padding: 1rem;
       text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .modo-oscuro {
-      background-color: #121212;
-      color: #eee;
-    }
-
-    .modo-oscuro .materia label {
-      color: #eee;
-    }
-
-    .toggle-modo {
-      display: block;
-      margin: 0 auto 1rem auto;
-      padding: 0.5rem 1rem;
-      border: none;
-      background-color: #c5a8ff;
-      color: #000;
-      border-radius: 8px;
-      cursor: pointer;
+      font-weight: 400;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1rem;
-    }
-
-    .anio {
-      background-color: #ffe8f0;
-      border: 2px solid #f5c6d6;
-      border-radius: 12px;
       padding: 1rem;
+      max-width: 1200px;
+      margin: auto;
     }
 
-    .anio h2 {
-      color: #a04f72;
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
+    .column {
+      background: #fdf6ff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 1rem;
+      border: 1px solid #f3ddff;
+      display: flex;
+      flex-direction: column;
     }
 
-    .materia {
-      margin-bottom: 0.5rem;
-    }
-
-    .materia input[type="checkbox"]:disabled + label {
-      color: #aaa;
-      text-decoration: none;
-    }
-
-    .materia input[type="checkbox"]:checked + label {
-      text-decoration: line-through;
-      opacity: 0.6;
-    }
-
-    label {
-      margin-left: 0.5rem;
-      cursor: pointer;
-    }
-
-    .tooltip {
-      position: relative;
-      display: inline-block;
-      border-bottom: 1px dotted black;
-    }
-
-    .tooltip .tooltiptext {
-      visibility: hidden;
-      width: 220px;
-      background-color: #333;
-      color: #fff;
+    .column h2 {
+      color: #a069c7;
+      font-size: 1rem;
+      margin-bottom: 0.8rem;
+      border-bottom: 1px solid #e4c9f7;
+      padding-bottom: 0.3rem;
       text-align: center;
-      border-radius: 6px;
-      padding: 5px;
-      position: absolute;
-      z-index: 1;
-      bottom: 125%; 
-      left: 50%;
-      margin-left: -110px;
-      opacity: 0;
-      transition: opacity 0.3s;
     }
 
-    .tooltip:hover .tooltiptext {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .barra-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem;
-    }
-
-    .barra {
-      width: 80%;
-      background-color: #ddd;
-      height: 30px;
-      border-radius: 15px;
-      overflow: hidden;
+    .subject {
+      margin-bottom: 0.7rem;
+      padding: 0.6rem;
+      border-radius: 8px;
+      background: #ffeef7;
       position: relative;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 0.9rem;
+      user-select: none;
     }
 
-    .progreso {
-      background-color: #a0e8af;
-      height: 100%;
-      width: 0;
-      transition: width 0.3s;
-      display: flex;
-      align-items: center;
-      position: relative;
+    .subject:hover {
+      background: #fce7ff;
     }
 
-    .gatito {
+    .subject.approved {
+      background: #d2f4e5;
+      color: #2c8059;
+      text-decoration: line-through;
+    }
+
+    .subject.locked {
+      background: #f0f0f0;
+      color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .subject.locked:hover::after,
+    .subject[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
       position: absolute;
-      right: -25px;
-      top: -10px;
-      width: 40px;
-      height: 40px;
-    }
-
-    .gatito img {
-      width: 100%;
-      animation: rodar 1s linear infinite;
-    }
-
-    @keyframes rodar {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #5c3c7c;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      font-size: 0.75rem;
+      width: 180px;
+      margin-left: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 10;
     }
   </style>
 </head>
 <body>
-
   <h1>Mi progreso en FMED</h1>
-  <button class="toggle-modo" onclick="alternarModo()">Modo oscuro / claro</button>
-
-  <div class="barra-container">
-    <div class="barra">
-      <div class="progreso" id="barraProgreso">
-        <div class="gatito">
-          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIA..." alt="Gatito" />
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid" id="contenedorMaterias">
-    <!-- Aquí van todas tus materias como en el código original (ya están cargadas, este bloque se llena dinámicamente con JS) -->
-  </div>
+  <div class="grid" id="malla"></div>
 
   <script>
-    const materias = [
-      { nombre: "Química CBC", id: "quimica" },
-      { nombre: "Biología CBC", id: "biologia" },
-      { nombre: "Física CBC", id: "fisica" },
-      { nombre: "ICSE CBC", id: "icse" },
-      { nombre: "IPC CBC", id: "ipc" },
-      { nombre: "Matemática CBC", id: "matematica" },
-      { nombre: "Anatomía", id: "anatomia", correlativas: ["quimica", "biologia"] },
-      { nombre: "Histología", id: "histologia", correlativas: ["biologia"] },
-      { nombre: "Embriología", id: "embriologia", correlativas: ["biologia"] },
-      { nombre: "Salud Pública I", id: "sp1", correlativas: ["icse"] },
-      { nombre: "Biofísica", id: "biofisica", correlativas: ["fisica"] },
-      { nombre: "Informática Médica", id: "info", correlativas: ["ipc"] },
-      // Agregá el resto de tus materias siguiendo este formato...
-    ];
-
-    const contenedor = document.getElementById("contenedorMaterias");
-
-    const anios = {
-      "CBC": [],
-      "1er Año": [],
-      "2do Año": [],
-      "3er Año": [],
-      "4to Año": [],
-      "5to Año": [],
-      "Internado Anual": [],
+    const materias = {
+      "CBC": [
+        { name: "Química" },
+        { name: "Int. Con. Sociedad y Estado" },
+        { name: "Int. Pensamiento Científico" },
+        { name: "Matemática" },
+        { name: "Física e Int. Biofísica" },
+        { name: "Biología e Int. Biología Celular" }
+      ],
+      "Ciclo Biomédico - Primer Año": [
+        { name: "Anatomía", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+        { name: "Histología - Biología Celular - Genética", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+        { name: "Salud Mental", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+        { name: "Bioética I", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] },
+        { name: "Medicina Familiar", requires: ["Química", "Int. Con. Sociedad y Estado", "Int. Pensamiento Científico", "Matemática", "Física e Int. Biofísica", "Biología e Int. Biología Celular"] }
+      ],
+      "Ciclo Biomédico - Segundo Año": [
+        { name: "Química Biológica", requires: ["Anatomía", "Histología - Biología Celular - Genética"] },
+        { name: "Fisiología y Biofísica", requires: ["Anatomía", "Histología - Biología Celular - Genética"] }
+      ],
+      "Ciclo Biomédico - Tercer Año": [
+        { name: "Microbiología y Parasitología I", requires: ["Fisiología y Biofísica", "Química Biológica"] },
+        { name: "Inmunología Humana", requires: ["Fisiología y Biofísica", "Química Biológica"] },
+        { name: "Microbiología y Parasitología II", requires: ["Microbiología y Parasitología I"] },
+        { name: "Patología I", requires: ["Fisiología y Biofísica", "Química Biológica"] },
+        { name: "Farmacología I", requires: ["Fisiología y Biofísica", "Química Biológica"] }
+      ],
+      "Ciclo Clínico": [
+        { name: "Medicina A (semiología - fisiopatología)", requires: ["Microbiología y Parasitología II", "Inmunología Humana", "Patología I", "Farmacología I", "Salud Mental", "Bioética I"] },
+        { name: "Patología II", requires: ["Patología I"] },
+        { name: "Salud Pública I", requires: ["Microbiología y Parasitología I", "Medicina A (semiología - fisiopatología)"] },
+        { name: "Farmacología II", requires: ["Farmacología I", "Salud Pública I"] },
+        { name: "Salud Pública II", requires: ["Salud Pública I"] },
+        { name: "Medicina Legal - Deontología Médica", requires: ["Farmacología II"] },
+        { name: "Bioética II", requires: ["Bioética I"] },
+        { name: "Toxicología", requires: ["Medicina A (semiología - fisiopatología)", "Patología II"] }
+      ],
+      "Clínicas (Medicina Interna)": [
+        { name: "Medicina B (Medicina Interna)", requires: ["Medicina A (semiología - fisiopatología)", "Patología II"] },
+        { name: "Nutrición" },
+        { name: "Diagnóstico por Imágenes" },
+        { name: "Dermatología" },
+        { name: "Infectología" },
+        { name: "Neumonología" },
+        { name: "Neurología" },
+        { name: "Psiquiatría" }
+      ],
+      "Quirúrgicas": [
+        { name: "Pediatría", requires: ["Medicina A (semiología - fisiopatología)", "Patología II"] },
+        { name: "Obstetricia" },
+        { name: "Ginecología" },
+        { name: "Cirugía general" },
+        { name: "Urología" },
+        { name: "Ortopedia - Traumatología" },
+        { name: "Oftalmología" },
+        { name: "Otorrinolaringología" },
+        { name: "Neurocirugía" }
+      ],
+      "Ciclo Internado Anual Rotatorio": [
+        { name: "Clínica Médica" },
+        { name: "Cirugía" },
+        { name: "Tocoginecología" },
+        { name: "Pediatría" },
+        { name: "S. Mental" },
+        { name: "APS" },
+        { name: "Módulo Específico / Curso de Residencia" }
+      ]
     };
 
-    materias.forEach(m => {
-      if (m.nombre.includes("CBC")) anios["CBC"].push(m);
-      else if (["anatomia", "histologia", "embriologia"].includes(m.id)) anios["1er Año"].push(m);
-      else if (["biofisica", "info", "sp1"].includes(m.id)) anios["2do Año"].push(m);
-      else anios["3er Año"].push(m); // distribuir el resto como quieras
-    });
+    // Obtener aprobadas desde localStorage o desde URL
+    const storageKey = "malla_medicina_pastel";
+    let aprobadas = [];
 
-    for (const [anio, materiasAnio] of Object.entries(anios)) {
-      const div = document.createElement("div");
-      div.className = "anio";
-      const titulo = document.createElement("h2");
-      titulo.textContent = anio;
-      div.appendChild(titulo);
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("aprobadas")) {
+      aprobadas = decodeURIComponent(params.get("aprobadas")).split(",");
+    } else {
+      aprobadas = JSON.parse(localStorage.getItem(storageKey)) || [];
+    }
 
-      materiasAnio.forEach(m => {
-        const cont = document.createElement("div");
-        cont.className = "materia";
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = m.id;
+    function saveProgress() {
+      localStorage.setItem(storageKey, JSON.stringify(aprobadas));
 
-        const label = document.createElement("label");
-        label.htmlFor = m.id;
-        if (m.correlativas) {
-          const tooltip = document.createElement("span");
-          tooltip.className = "tooltip";
-          tooltip.textContent = m.nombre;
+      // Agregar al URL
+      const encoded = encodeURIComponent(aprobadas.join(","));
+      const newUrl = ${window.location.pathname}?aprobadas=${encoded};
+      history.replaceState(null, "", newUrl);
+    }
 
-          const tooltipText = document.createElement("span");
-          tooltipText.className = "tooltiptext";
-          tooltipText.textContent = "Correlativas: " + m.correlativas.map(c => materias.find(mat => mat.id === c)?.nombre).join(", ");
+    function isAprobada(name) {
+      return aprobadas.includes(name);
+    }
 
-          tooltip.appendChild(tooltipText);
-          label.appendChild(tooltip);
-        } else {
-          label.textContent = m.nombre;
+    function checkRequirements(requires) {
+      if (!requires) return true;
+      return requires.every(req => isAprobada(req));
+    }
+
+    function render() {
+      const container = document.getElementById("malla");
+      container.innerHTML = "";
+
+      for (const ciclo in materias) {
+        const col = document.createElement("div");
+        col.className = "column";
+        const h2 = document.createElement("h2");
+        h2.textContent = ciclo;
+        col.appendChild(h2);
+
+        for (const mat of materias[ciclo]) {
+          const div = document.createElement("div");
+          div.className = "subject";
+          div.textContent = mat.name;
+
+          const approved = isAprobada(mat.name);
+          const allowed = checkRequirements(mat.requires);
+
+          if (approved) {
+            div.classList.add("approved");
+          } else if (!allowed) {
+            div.classList.add("locked");
+          }
+
+          if (mat.requires) {
+            div.setAttribute("data-tooltip", "📎 Requiere:\n" + mat.requires.join("\n"));
+          }
+
+          div.addEventListener("click", () => {
+            if (div.classList.contains("locked")) return;
+
+            if (approved) {
+              aprobadas = aprobadas.filter(x => x !== mat.name);
+            } else {
+              aprobadas.push(mat.name);
+            }
+            saveProgress();
+            render();
+          });
+
+          col.appendChild(div);
         }
 
-        cont.appendChild(checkbox);
-        cont.appendChild(label);
-        div.appendChild(cont);
-      });
-
-      contenedor.appendChild(div);
+        container.appendChild(col);
+      }
     }
 
-    function alternarModo() {
-      document.body.classList.toggle("modo-oscuro");
-    }
-
-    function actualizarProgreso() {
-      const total = document.querySelectorAll('.materia input').length;
-      const marcadas = document.querySelectorAll('.materia input:checked').length;
-      const porcentaje = (marcadas / total) * 100;
-      document.getElementById('barraProgreso').style.width = porcentaje + "%";
-    }
-
-    function controlarCorrelativas() {
-      materias.forEach(m => {
-        const checkbox = document.getElementById(m.id);
-        if (!checkbox) return;
-        if (!m.correlativas || m.correlativas.every(c => document.getElementById(c)?.checked)) {
-          checkbox.disabled = false;
-        } else {
-          checkbox.disabled = true;
-        }
-      });
-    }
-
-    document.querySelectorAll('.materia input').forEach(cb => {
-      cb.addEventListener("change", () => {
-        actualizarProgreso();
-        controlarCorrelativas();
-      });
-    });
-
-    window.onload = () => {
-      controlarCorrelativas();
-      actualizarProgreso();
-    };
+    render();
   </script>
 </body>
 </html>
