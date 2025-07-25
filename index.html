@@ -2,194 +2,219 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mi progreso en FMED</title>
   <style>
-    :root {
-      --pastel-rosa: #f9c8d9;
-      --pastel-lila: #d8c9f9;
-      --pastel-verde: #c9f9ea;
-      --fondo-claro: #fefefe;
-      --fondo-oscuro: #222;
-      --texto-oscuro: #222;
-      --texto-claro: #fefefe;
-    }
-
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: var(--fondo-claro);
-      color: var(--texto-oscuro);
-      transition: background 0.3s, color 0.3s;
-      padding: 2rem;
+      background-color: #fdf6f9;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+      padding: 20px;
     }
-
     body.dark {
-      background-color: var(--fondo-oscuro);
-      color: var(--texto-claro);
+      background-color: #1e1e1e;
+      color: #e0e0e0;
     }
-
     h1 {
-      font-style: italic;
       text-align: center;
+      font-style: italic;
       font-size: 2rem;
+      color: #a34793;
     }
-
-    .modo-oscuro-btn {
+    .year {
+      margin-top: 30px;
+    }
+    .year h2 {
+      font-size: 1.5rem;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+    .subjects {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
+    }
+    .subject {
+      background-color: #f9e6f0;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    .subject:hover {
+      background-color: #f3d1e6;
+    }
+    .subject input {
+      display: none;
+    }
+    .subject.checked {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+    .subject.locked {
+      pointer-events: none;
+      opacity: 0.3;
+    }
+    .tooltip {
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #444;
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      white-space: pre-line;
+      display: none;
+      z-index: 2;
+    }
+    .subject:hover .tooltip {
       display: block;
-      margin: 1rem auto;
-      padding: 0.5rem 1rem;
-      border-radius: 10px;
+    }
+    #darkModeToggle {
+      margin: 10px auto;
+      display: block;
+      padding: 6px 12px;
+      border-radius: 6px;
       border: none;
-      background-color: var(--pastel-lila);
+      background-color: #caa5d9;
+      color: #333;
       cursor: pointer;
     }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
-    .materia {
-      padding: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      background-color: var(--pastel-verde);
+    .progress-container {
       position: relative;
-    }
-
-    .materia input[type="checkbox"] {
-      margin-right: 0.5rem;
-    }
-
-    .materia[disabled] {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    .materia:hover::after {
-      content: attr(data-correlativas);
-      position: absolute;
-      background: #444;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 8px;
-      top: 100%;
-      left: 0;
-      z-index: 10;
-      font-size: 0.8rem;
-    }
-
-    .barra-progreso {
       width: 100%;
-      max-width: 700px;
-      margin: 2rem auto;
-      background: #ccc;
+      max-width: 600px;
+      height: 40px;
+      margin: 30px auto;
+      background-color: #e0e0e0;
       border-radius: 20px;
-      height: 30px;
-      position: relative;
       overflow: hidden;
     }
-
-    .relleno {
+    .progress-bar {
       height: 100%;
-      background: var(--pastel-rosa);
-      width: 0%;
-      transition: width 0.4s ease-in-out;
+      background-color: #a1e3d8;
+      width: 0;
+      transition: width 0.5s;
+      position: relative;
     }
-
-    .gatito {
+    .cat {
       position: absolute;
-      top: -25px;
-      left: 0;
+      top: -20px;
       width: 60px;
       height: 60px;
-      transition: left 0.4s ease-in-out;
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAABHNCSVQICAgIfAhkiAAAAeRJREFUaIHtmkFuwkAQRXlObaFS7E67Ea3aKUvQk/UXc2gg8iy2exGBoEE/58bb5IMBGcECBAgQIECAAAECxD9mgchjc14v7Ocm6UjR7XcdJ+a8NeBgE6bGeBQHjwvErzfnf8KkHmAvASClDvhM0rkQ8EhS2nA9+zHhT1roM8ogS5EWHZx2MTBQQWmS8KnF9Bjs6JL8UbGyC89aAfiJHD1WEJYUr7uCSXlQbmxBrWq1HngWaOX+VQy0aBykD0iSVz46FQOMvHUB9DQ9MZ4MGLkglSVUDF09dcVZEmiPaAFbt9MnQxV+km6Z0BDIGmt7nX7IQOBEjX6UV9YzID4bT9YJYFgje+fHv02KeRGppL0JxBUpNSVrJ5itVVIl+mSmRfxPSEpqTYke1ZcRxMVaj3eDjAXuTeyhMvWxJtFtIuN/yCl/k6X3M5i+1lEY+k4dW3cU37a7B9n3whZMy0kpoCaqZEv6sl6VfwE9dCxz7MXr2wAAAABJRU5ErkJggg==');
+      background-size: contain;
+      background-repeat: no-repeat;
     }
   </style>
 </head>
 <body>
   <h1>Mi progreso en FMED</h1>
-  <button class="modo-oscuro-btn" onclick="toggleModoOscuro()">Cambiar modo</button>
+  <button id="darkModeToggle">🌙 Modo Oscuro</button>
 
-  <div class="barra-progreso">
-    <div class="relleno" id="barra"></div>
-    <img class="gatito" id="gatito" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAAAjVBMVEUAAAD/AAD9/f3///3///n/AAD4+Pj8/Pz8/Pz7+/v7+/v6+vr5+fn29vb19fXx8fHp6enp6ens7Ozq6urn5+fp6enr6+vs7Ozv7+/u7u7v7+/w8PDy8vLz8/Pz8/Pz8/Pz8/Pw8PDw8PDv7+/v7+/v7+/w8PDw8PDo6Ojk5OTl5eXo6Oj///+MZyzFAAAAJHRSTlMAAQIFBQYICQoLDA0ODxITFBUWFxgaHB0eHyAiIyQlJicoKissLDAwGGGHdGgAAANdJREFUSMdjYAACiZhZWVlaDGL9//8Zgo0BIIgVDGMUhzEoICbZQPlCQUFAa2MEAxHRA+CyIXdA8yESRgTAHRECh1cAeQRQJ4Zg1pEyOQUAvqADmZCDIhZ2DiCM6MEkjBAFJkwGRWJphlSAAzEYo9QwQFYZAE4yTFiobZhhAUo6S2kIY2I0CYTkpAZTk5AJkY4AyoACiH0ZcIil3DqCAAAAABJRU5ErkJggg==" />
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar">
+      <div class="cat" id="catIcon"></div>
+    </div>
   </div>
 
-  <div class="grid" id="contenedorMaterias"></div>
+  <div class="year">
+    <h2>CBC</h2>
+    <div class="subjects">
+      <label class="subject"><input type="checkbox" data-id="cbc1">Química</label>
+      <label class="subject"><input type="checkbox" data-id="cbc2">Física</label>
+      <label class="subject"><input type="checkbox" data-id="cbc3">Biología</label>
+    </div>
+  </div>
+
+  <div class="year">
+    <h2>1° Año</h2>
+    <div class="subjects">
+      <label class="subject" data-correlativas="cbc1,cbc2">
+        <input type="checkbox" data-id="m1">Anatomía
+        <span class="tooltip">Correlativas:\nQuímica, Física</span>
+      </label>
+      <label class="subject" data-correlativas="cbc3">
+        <input type="checkbox" data-id="m2">Histología
+        <span class="tooltip">Correlativa:\nBiología</span>
+      </label>
+      <label class="subject" data-correlativas="cbc2">
+        <input type="checkbox" data-id="m3">Salud Mental
+        <span class="tooltip">Correlativa:\nFísica</span>
+      </label>
+    </div>
+  </div>
 
   <script>
-    const materias = [
-      { nombre: "Biología", correlativas: [] },
-      { nombre: "Química", correlativas: [] },
-      { nombre: "Biofísica", correlativas: [] },
-      { nombre: "Anatomía", correlativas: ["Biología"] },
-      { nombre: "Histología", correlativas: ["Biología"] },
-      { nombre: "Salud Mental", correlativas: ["Histología"] },
-      { nombre: "Microbiología", correlativas: ["Química", "Anatomía"] },
-      { nombre: "Farmacología", correlativas: ["Química", "Microbiología"] },
-      { nombre: "Clínica Médica", correlativas: ["Farmacología"] },
-      { nombre: "Internado", correlativas: ["Clínica Médica", "Salud Mental"] }
-    ];
+    const toggleBtn = document.getElementById('darkModeToggle');
+    const body = document.body;
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const subjects = document.querySelectorAll('.subject');
+    const progressBar = document.getElementById('progressBar');
+    const cat = document.getElementById('catIcon');
 
-    const contenedor = document.getElementById("contenedorMaterias");
-
-    function guardarEstado() {
-      localStorage.setItem("materiasTildadas", JSON.stringify(
-        [...document.querySelectorAll("input[type=checkbox]")].map(e => e.checked)
-      ));
-    }
-
-    function cargarEstado() {
-      const estado = JSON.parse(localStorage.getItem("materiasTildadas") || "[]");
-      document.querySelectorAll("input[type=checkbox]").forEach((cb, i) => {
-        cb.checked = !!estado[i];
-      });
-    }
-
-    function actualizar() {
-      const checkboxes = document.querySelectorAll("input[type=checkbox]");
-      const tildadas = Array.from(checkboxes).map(cb => cb.checked);
-      const total = checkboxes.length;
-      const hechas = tildadas.filter(t => t).length;
-      const porcentaje = (hechas / total) * 100;
-
-      document.getElementById("barra").style.width = `${porcentaje}%`;
-      document.getElementById("gatito").style.left = `calc(${porcentaje}% - 30px)`;
-
-      checkboxes.forEach((cb, i) => {
-        const mat = materias[i];
-        const habilitada = mat.correlativas.every(nom => {
-          const idx = materias.findIndex(m => m.nombre === nom);
-          return tildadas[idx];
-        });
-        cb.disabled = !habilitada;
-        cb.parentElement.setAttribute("data-correlativas", mat.correlativas.join(", "));
-      });
-
-      guardarEstado();
-    }
-
-    function toggleModoOscuro() {
-      document.body.classList.toggle("dark");
-    }
-
-    // Render materias
-    materias.forEach((mat, i) => {
-      const div = document.createElement("div");
-      div.className = "materia";
-      const check = document.createElement("input");
-      check.type = "checkbox";
-      check.addEventListener("change", actualizar);
-      div.appendChild(check);
-      div.appendChild(document.createTextNode(mat.nombre));
-      contenedor.appendChild(div);
+    toggleBtn.addEventListener('click', () => {
+      body.classList.toggle('dark');
     });
 
-    cargarEstado();
-    actualizar();
+    function updateProgress() {
+      const total = checkboxes.length;
+      const completed = [...checkboxes].filter(cb => cb.checked).length;
+      const percent = (completed / total) * 100;
+      progressBar.style.width = percent + '%';
+      cat.style.left = `calc(${percent}% - 30px)`;
+    }
+
+    function saveState() {
+      const state = [...checkboxes].map(cb => cb.checked);
+      localStorage.setItem('fmedProgress', JSON.stringify(state));
+    }
+
+    function loadState() {
+      const saved = JSON.parse(localStorage.getItem('fmedProgress') || '[]');
+      checkboxes.forEach((cb, i) => cb.checked = saved[i]);
+    }
+
+    function updateSubjectsState() {
+      subjects.forEach(subj => {
+        const corr = subj.dataset.correlativas;
+        if (!corr) {
+          subj.classList.remove('locked');
+          subj.querySelector('input').disabled = false;
+          return;
+        }
+        const required = corr.split(',');
+        const fulfilled = required.every(id => {
+          const match = document.querySelector(`input[data-id="${id}"]`);
+          return match && match.checked;
+        });
+        subj.classList.toggle('locked', !fulfilled);
+        subj.querySelector('input').disabled = !fulfilled;
+      });
+    }
+
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        cb.parentElement.classList.toggle('checked', cb.checked);
+        saveState();
+        updateProgress();
+        updateSubjectsState();
+      });
+    });
+
+    loadState();
+    checkboxes.forEach(cb => {
+      cb.parentElement.classList.toggle('checked', cb.checked);
+    });
+    updateProgress();
+    updateSubjectsState();
   </script>
 </body>
 </html>
