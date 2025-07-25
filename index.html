@@ -1,171 +1,195 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mi progreso en FMED</title>
   <style>
+    :root {
+      --pastel-rosa: #f9c8d9;
+      --pastel-lila: #d8c9f9;
+      --pastel-verde: #c9f9ea;
+      --fondo-claro: #fefefe;
+      --fondo-oscuro: #222;
+      --texto-oscuro: #222;
+      --texto-claro: #fefefe;
+    }
+
     body {
-      font-family: 'Comic Sans MS', cursive;
-      background-color: #faf6fb;
-      color: #333;
-      padding: 30px;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--fondo-claro);
+      color: var(--texto-oscuro);
+      transition: background 0.3s, color 0.3s;
+      padding: 2rem;
+    }
+
+    body.dark {
+      background-color: var(--fondo-oscuro);
+      color: var(--texto-claro);
     }
 
     h1 {
-      text-align: center;
       font-style: italic;
-      color: #8b4d8b;
+      text-align: center;
+      font-size: 2rem;
     }
 
-    .progress-container {
-      position: relative;
-      width: 80%;
-      height: 30px;
-      background-color: #ddd;
-      border-radius: 30px;
-      margin: 20px auto 40px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background-color: #d9a0d2;
-      border-radius: 30px;
-      transition: width 0.4s ease;
-      width: 0%;
-    }
-
-    .cat {
-      position: absolute;
-      top: -30px;
-      height: 60px;
-      transition: left 0.4s ease;
+    .modo-oscuro-btn {
+      display: block;
+      margin: 1rem auto;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      border: none;
+      background-color: var(--pastel-lila);
+      cursor: pointer;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
+      gap: 1rem;
+      margin-top: 2rem;
     }
 
-    .subject {
-      background-color: #ffe4f2;
-      border: 2px solid #ccc;
-      border-radius: 15px;
-      padding: 10px;
-      cursor: pointer;
+    .materia {
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background-color: var(--pastel-verde);
       position: relative;
     }
 
-    .subject.locked {
-      background-color: #eee;
-      color: #999;
+    .materia input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
+
+    .materia[disabled] {
+      opacity: 0.5;
       pointer-events: none;
     }
 
-    .subject.checked {
-      text-decoration: line-through;
-      background-color: #c5f5d3;
-    }
-
-    .tooltip {
-      visibility: hidden;
+    .materia:hover::after {
+      content: attr(data-correlativas);
       position: absolute;
-      top: -20px;
+      background: #444;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 8px;
+      top: 100%;
       left: 0;
-      background-color: #fff;
-      color: #000;
-      border: 1px solid #ccc;
-      padding: 5px;
-      font-size: 12px;
-      border-radius: 6px;
+      z-index: 10;
+      font-size: 0.8rem;
     }
 
-    .subject:hover .tooltip {
-      visibility: visible;
+    .barra-progreso {
+      width: 100%;
+      max-width: 700px;
+      margin: 2rem auto;
+      background: #ccc;
+      border-radius: 20px;
+      height: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .relleno {
+      height: 100%;
+      background: var(--pastel-rosa);
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .gatito {
+      position: absolute;
+      top: -25px;
+      left: 0;
+      width: 60px;
+      height: 60px;
+      transition: left 0.4s ease-in-out;
     }
   </style>
 </head>
 <body>
   <h1>Mi progreso en FMED</h1>
+  <button class="modo-oscuro-btn" onclick="toggleModoOscuro()">Cambiar modo</button>
 
-  <div class="progress-container">
-    <div class="progress-bar" id="progress-bar"></div>
-    <img src="gatito.png" class="cat" id="cat" />
+  <div class="barra-progreso">
+    <div class="relleno" id="barra"></div>
+    <img class="gatito" id="gatito" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAAAjVBMVEUAAAD/AAD9/f3///3///n/AAD4+Pj8/Pz8/Pz7+/v7+/v6+vr5+fn29vb19fXx8fHp6enp6ens7Ozq6urn5+fp6enr6+vs7Ozv7+/u7u7v7+/w8PDy8vLz8/Pz8/Pz8/Pz8/Pw8PDw8PDv7+/v7+/v7+/w8PDw8PDo6Ojk5OTl5eXo6Oj///+MZyzFAAAAJHRSTlMAAQIFBQYICQoLDA0ODxITFBUWFxgaHB0eHyAiIyQlJicoKissLDAwGGGHdGgAAANdJREFUSMdjYAACiZhZWVlaDGL9//8Zgo0BIIgVDGMUhzEoICbZQPlCQUFAa2MEAxHRA+CyIXdA8yESRgTAHRECh1cAeQRQJ4Zg1pEyOQUAvqADmZCDIhZ2DiCM6MEkjBAFJkwGRWJphlSAAzEYo9QwQFYZAE4yTFiobZhhAUo6S2kIY2I0CYTkpAZTk5AJkY4AyoACiH0ZcIil3DqCAAAAABJRU5ErkJggg==" />
   </div>
 
-  <div class="grid" id="subjects-grid"></div>
+  <div class="grid" id="contenedorMaterias"></div>
 
   <script>
     const materias = [
-      { nombre: "CBC - Biología", correlativas: [] },
-      { nombre: "CBC - Química", correlativas: [] },
-      { nombre: "CBC - Física", correlativas: [] },
-      { nombre: "Anatomía", correlativas: ["CBC - Biología", "CBC - Química"] },
-      { nombre: "Histología", correlativas: ["CBC - Biología"] },
-      { nombre: "Bioquímica", correlativas: ["CBC - Química"] },
-      { nombre: "Fisiología", correlativas: ["Anatomía", "Bioquímica"] },
-      { nombre: "Salud Mental", correlativas: ["Fisiología"] },
-      { nombre: "Farmacología", correlativas: ["Fisiología", "Bioquímica"] },
+      { nombre: "Biología", correlativas: [] },
+      { nombre: "Química", correlativas: [] },
+      { nombre: "Biofísica", correlativas: [] },
+      { nombre: "Anatomía", correlativas: ["Biología"] },
+      { nombre: "Histología", correlativas: ["Biología"] },
+      { nombre: "Salud Mental", correlativas: ["Histología"] },
+      { nombre: "Microbiología", correlativas: ["Química", "Anatomía"] },
+      { nombre: "Farmacología", correlativas: ["Química", "Microbiología"] },
       { nombre: "Clínica Médica", correlativas: ["Farmacología"] },
-      { nombre: "CIR Internado", correlativas: ["Clínica Médica", "Salud Mental"] }
+      { nombre: "Internado", correlativas: ["Clínica Médica", "Salud Mental"] }
     ];
 
-    const grid = document.getElementById('subjects-grid');
+    const contenedor = document.getElementById("contenedorMaterias");
 
-    function crearMateria(materia) {
-      const div = document.createElement('div');
-      div.className = 'subject locked';
-      div.textContent = materia.nombre;
+    function guardarEstado() {
+      localStorage.setItem("materiasTildadas", JSON.stringify(
+        [...document.querySelectorAll("input[type=checkbox]")].map(e => e.checked)
+      ));
+    }
 
-      const tooltip = document.createElement('div');
-      tooltip.className = 'tooltip';
-      tooltip.textContent = materia.correlativas.length ? 'Correlativas: ' + materia.correlativas.join(', ') : 'Sin correlativas';
-      div.appendChild(tooltip);
+    function cargarEstado() {
+      const estado = JSON.parse(localStorage.getItem("materiasTildadas") || "[]");
+      document.querySelectorAll("input[type=checkbox]").forEach((cb, i) => {
+        cb.checked = !!estado[i];
+      });
+    }
 
-      div.addEventListener('click', () => {
-        div.classList.toggle('checked');
-        actualizarMaterias();
+    function actualizar() {
+      const checkboxes = document.querySelectorAll("input[type=checkbox]");
+      const tildadas = Array.from(checkboxes).map(cb => cb.checked);
+      const total = checkboxes.length;
+      const hechas = tildadas.filter(t => t).length;
+      const porcentaje = (hechas / total) * 100;
+
+      document.getElementById("barra").style.width = `${porcentaje}%`;
+      document.getElementById("gatito").style.left = `calc(${porcentaje}% - 30px)`;
+
+      checkboxes.forEach((cb, i) => {
+        const mat = materias[i];
+        const habilitada = mat.correlativas.every(nom => {
+          const idx = materias.findIndex(m => m.nombre === nom);
+          return tildadas[idx];
+        });
+        cb.disabled = !habilitada;
+        cb.parentElement.setAttribute("data-correlativas", mat.correlativas.join(", "));
       });
 
-      return div;
+      guardarEstado();
     }
 
-    function actualizarMaterias() {
-      const materiasDivs = document.querySelectorAll('.subject');
-      materiasDivs.forEach((div, i) => {
-        const aprobadas = [...materiasDivs].filter(m => m.classList.contains('checked')).map(m => m.textContent);
-        const estaAprobada = div.classList.contains('checked');
-        const correlativas = materias[i].correlativas;
-
-        if (estaAprobada || correlativas.every(c => aprobadas.includes(c))) {
-          div.classList.remove('locked');
-        } else {
-          div.classList.add('locked');
-        }
-      });
-
-      actualizarProgreso();
+    function toggleModoOscuro() {
+      document.body.classList.toggle("dark");
     }
 
-    function actualizarProgreso() {
-      const total = materias.length;
-      const aprobadas = document.querySelectorAll('.subject.checked').length;
-      const progreso = (aprobadas / total) * 100;
-
-      const bar = document.getElementById('progress-bar');
-      const cat = document.getElementById('cat');
-
-      bar.style.width = progreso + '%';
-      cat.style.left = `calc(${progreso}% - 30px)`;
-    }
-
-    // Inicializa
-    materias.forEach(m => {
-      const div = crearMateria(m);
-      grid.appendChild(div);
+    // Render materias
+    materias.forEach((mat, i) => {
+      const div = document.createElement("div");
+      div.className = "materia";
+      const check = document.createElement("input");
+      check.type = "checkbox";
+      check.addEventListener("change", actualizar);
+      div.appendChild(check);
+      div.appendChild(document.createTextNode(mat.nombre));
+      contenedor.appendChild(div);
     });
-    actualizarMaterias();
+
+    cargarEstado();
+    actualizar();
   </script>
 </body>
 </html>
