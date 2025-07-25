@@ -4,35 +4,79 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mi progreso en FMED</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #fff0f5;
+      background-color: #fdf6fa;
       color: #2c2c2c;
-      transition: background 0.3s, color 0.3s;
+      transition: background-color 0.3s, color 0.3s;
     }
 
-    h1 {
-      font-family: 'Brush Script MT', cursive;
+    .dark-mode {
+      background-color: #1e1e1e;
+      color: #e8e8e8;
+    }
+
+    header {
       text-align: center;
-      margin-top: 20px;
+      padding: 1rem;
+      background-color: transparent;
+      font-family: 'Pacifico', cursive;
+      font-size: 2rem;
     }
 
-    .container {
-      padding: 20px;
-      max-width: 1200px;
-      margin: auto;
+    .dark-mode header {
+      color: #fff;
     }
 
-    .anio {
-      margin-bottom: 30px;
+    .progress-container {
+      width: 80%;
+      margin: 2rem auto;
+      height: 25px;
+      background-color: #ddd;
+      border-radius: 30px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .anio h2 {
-      color: #444;
-      font-size: 1.5rem;
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background-color: #a084ca;
+      border-radius: 30px;
+      transition: width 0.5s ease;
+    }
+
+    .cat {
+      position: absolute;
+      top: -40px;
+      width: 60px;
+      transition: left 0.5s ease;
+      z-index: 2;
+    }
+
+    .modo-oscuro-btn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #444;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .seccion {
+      margin: 2rem;
+    }
+
+    .seccion h2 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
     }
 
     .materias {
@@ -42,27 +86,18 @@
     }
 
     .materia {
-      background-color: #ffe4f2;
-      padding: 10px 15px;
+      background-color: #cba1d1;
+      color: #2c2c2c;
+      padding: 8px 14px;
       border-radius: 12px;
       cursor: pointer;
+      transition: 0.3s;
+      user-select: none;
       position: relative;
-      transition: background 0.3s, color 0.3s;
     }
 
-    .materia:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      bottom: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #555;
-      color: white;
-      padding: 5px 8px;
-      border-radius: 5px;
-      font-size: 0.8rem;
-      white-space: nowrap;
-      z-index: 2;
+    .materia:hover {
+      background-color: #e3bfe3;
     }
 
     .materia.tachada {
@@ -70,171 +105,126 @@
       opacity: 0.5;
     }
 
-    .progress-container {
-      position: relative;
-      width: 80%;
-      margin: 40px auto;
-      height: 30px;
-      background: #e0e0e0;
-      border-radius: 20px;
-      overflow: hidden;
+    .materia.bloqueada {
+      background-color: #ccc !important;
+      cursor: not-allowed;
     }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #f3b3d2;
-      border-radius: 20px 0 0 20px;
-      position: relative;
-      transition: width 0.5s ease-in-out;
-    }
-
-    .gatito {
+    .materia[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
       position: absolute;
-      bottom: -35px;
-      width: 60px;
-      height: 60px;
-      background-image: url('https://i.imgur.com/obRZbYz.png'); /* Imagen de gatito empujando estambre */
-      background-size: contain;
-      background-repeat: no-repeat;
-      transition: left 0.5s ease-in-out;
-    }
-
-    .toggle-mode {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background-color: #444;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    body.dark {
-      background-color: #1e1e1e;
-      color: #f5f5f5;
-    }
-
-    body.dark .materia {
-      background-color: #5a3e57;
+      bottom: -25px;
+      left: 0;
+      background: #222;
       color: #fff;
-    }
-
-    body.dark .progress-container {
-      background-color: #333;
-    }
-
-    body.dark .progress-bar {
-      background-color: #cc6699;
+      padding: 4px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      font-size: 0.8rem;
     }
   </style>
 </head>
 <body>
-  <button class="toggle-mode" onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
-  <h1>Mi progreso en FMED</h1>
+  <div class="modo-oscuro-btn" onclick="toggleModoOscuro()">🌙 Modo Oscuro</div>
+  <header>Mi progreso en FMED</header>
 
   <div class="progress-container">
-    <div class="progress-bar" id="progress-bar">
-      <div class="gatito" id="gatito"></div>
+    <div class="progress-bar" id="progress-bar"></div>
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" class="cat" id="cat" />
+  </div>
+
+  <div class="seccion">
+    <h2>CBC</h2>
+    <div class="materias">
+      <div class="materia" data-id="biologia">Biología</div>
+      <div class="materia" data-id="quimica">Química</div>
+      <div class="materia" data-id="matematica">Matemática</div>
+      <div class="materia" data-id="fisica">Física</div>
+      <div class="materia" data-id="icse">ICSE</div>
+      <div class="materia" data-id="ipc">IPC</div>
     </div>
   </div>
 
-  <div class="container" id="malla"></div>
+  <div class="seccion">
+    <h2>1° Año</h2>
+    <div class="materias">
+      <div class="materia bloqueada" data-id="anatomia" data-correlativas="biologia,quimica,matematica">Anatomía</div>
+      <div class="materia bloqueada" data-id="histologia" data-correlativas="biologia,quimica">Histología</div>
+      <div class="materia bloqueada" data-id="quimicabiologica" data-correlativas="quimica">Química Biológica</div>
+      <div class="materia bloqueada" data-id="saludmental" data-correlativas="icse,ipc">Salud Mental</div>
+    </div>
+  </div>
 
   <script>
-    const malla = {
-      "CBC": [
-        { nombre: "Biología", correlativas: [] },
-        { nombre: "Química", correlativas: [] },
-        { nombre: "Matemática", correlativas: [] },
-        { nombre: "Física", correlativas: [] },
-        { nombre: "ICSE", correlativas: [] },
-        { nombre: "IPC", correlativas: [] }
-      ],
-      "1° Año": [
-        { nombre: "Anatomía", correlativas: ["Biología"] },
-        { nombre: "Histología", correlativas: ["Biología"] },
-        { nombre: "Química Biológica", correlativas: ["Química"] },
-        { nombre: "Salud Mental", correlativas: ["IPC"] }
-      ],
-      // Agrega más años y materias según tu plan
-    };
-
-    const mallaContainer = document.getElementById('malla');
+    const materias = document.querySelectorAll('.materia');
     const progressBar = document.getElementById('progress-bar');
-    const gatito = document.getElementById('gatito');
-    let totalMaterias = 0;
-    let materiasTachadas = 0;
+    const cat = document.getElementById('cat');
 
-    const tachadas = JSON.parse(localStorage.getItem('materiasTachadas') || '{}');
+    function guardarEstado() {
+      const estado = Array.from(materias).map(m => ({
+        id: m.dataset.id,
+        tachada: m.classList.contains('tachada')
+      }));
+      localStorage.setItem('estadoMaterias', JSON.stringify(estado));
+    }
 
-    function crearMalla() {
-      mallaContainer.innerHTML = '';
-      totalMaterias = 0;
-      materiasTachadas = 0;
-
-      for (const anio in malla) {
-        const bloque = document.createElement('div');
-        bloque.className = 'anio';
-
-        const titulo = document.createElement('h2');
-        titulo.textContent = anio;
-        bloque.appendChild(titulo);
-
-        const materiasDiv = document.createElement('div');
-        materiasDiv.className = 'materias';
-
-        malla[anio].forEach(materia => {
-          totalMaterias++;
-          const div = document.createElement('div');
-          div.className = 'materia';
-          div.textContent = materia.nombre;
-          div.setAttribute('data-tooltip', materia.correlativas.join(', '));
-          const id = `${anio}-${materia.nombre}`;
-
-          if (tachadas[id]) {
-            div.classList.add('tachada');
-            materiasTachadas++;
-          }
-
-          div.addEventListener('click', () => {
-            if (div.classList.contains('tachada')) {
-              div.classList.remove('tachada');
-              delete tachadas[id];
-              materiasTachadas--;
-            } else {
-              div.classList.add('tachada');
-              tachadas[id] = true;
-              materiasTachadas++;
-            }
-            localStorage.setItem('materiasTachadas', JSON.stringify(tachadas));
-            actualizarProgreso();
-          });
-
-          materiasDiv.appendChild(div);
-        });
-
-        bloque.appendChild(materiasDiv);
-        mallaContainer.appendChild(bloque);
-      }
-
-      actualizarProgreso();
+    function cargarEstado() {
+      const estado = JSON.parse(localStorage.getItem('estadoMaterias')) || [];
+      estado.forEach(item => {
+        const materia = document.querySelector(`.materia[data-id="${item.id}"]`);
+        if (materia) {
+          if (item.tachada) materia.classList.add('tachada');
+        }
+      });
     }
 
     function actualizarProgreso() {
-      const porcentaje = (materiasTachadas / totalMaterias) * 100;
-      progressBar.style.width = `${porcentaje}%`;
-      gatito.style.left = `calc(${porcentaje}% - 30px)`;
+      const total = materias.length;
+      const completadas = document.querySelectorAll('.materia.tachada').length;
+      const progreso = (completadas / total) * 100;
+      progressBar.style.width = `${progreso}%`;
+      cat.style.left = `calc(${progreso}% - 30px)`;
     }
 
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark');
+    function desbloquearMaterias() {
+      materias.forEach(m => {
+        const corrs = m.dataset.correlativas;
+        if (corrs) {
+          const correlativas = corrs.split(',');
+          const aprobadas = correlativas.every(id =>
+            document.querySelector(`.materia[data-id="${id}"]`)?.classList.contains('tachada')
+          );
+          if (aprobadas) {
+            m.classList.remove('bloqueada');
+          }
+        }
+      });
     }
 
-    crearMalla();
+    materias.forEach(materia => {
+      materia.addEventListener('click', () => {
+        if (materia.classList.contains('bloqueada')) return;
+        materia.classList.toggle('tachada');
+        guardarEstado();
+        desbloquearMaterias();
+        actualizarProgreso();
+      });
+
+      const correlativas = materia.dataset.correlativas;
+      if (correlativas) {
+        materia.setAttribute('data-tooltip', 'Correlativas: ' + correlativas.replace(/,/g, ', '));
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarEstado();
+      desbloquearMaterias();
+      actualizarProgreso();
+    });
+
+    function toggleModoOscuro() {
+      document.body.classList.toggle('dark-mode');
+    }
   </script>
 </body>
 </html>
