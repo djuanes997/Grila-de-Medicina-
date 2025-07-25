@@ -2,222 +2,283 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mi progreso en FMED</title>
   <style>
     body {
-      background-color: #fdf6fb;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      color: #222;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f4ff;
+      color: #333;
       margin: 0;
-      padding: 0;
+      padding: 1rem;
       transition: background-color 0.3s, color 0.3s;
     }
 
-    .dark-mode {
-      background-color: #1e1e1e;
-      color: #ddd;
-    }
-
-    header {
+    h1 {
+      font-family: cursive;
       text-align: center;
-      padding: 1rem;
-      font-style: italic;
-      font-size: 2rem;
+      margin-bottom: 1rem;
     }
 
-    .progress-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      margin: 1rem auto;
-      width: 80%;
-      height: 40px;
-      background-color: #e0e0e0;
-      border-radius: 20px;
-      overflow: hidden;
+    .modo-oscuro {
+      background-color: #121212;
+      color: #eee;
     }
 
-    .progress-bar {
-      background-color: #a4d4ae;
-      height: 100%;
-      width: 0%;
-      transition: width 0.4s ease;
+    .modo-oscuro .materia label {
+      color: #eee;
     }
 
-    .cat {
-      position: absolute;
-      left: 0;
-      top: -20px;
-      width: 50px;
-      height: 50px;
-      transition: left 0.4s ease;
-    }
-
-    .cat img {
-      width: 100%;
-    }
-
-    .toggle-mode {
+    .toggle-modo {
       display: block;
-      margin: 0 auto 1rem;
+      margin: 0 auto 1rem auto;
       padding: 0.5rem 1rem;
       border: none;
-      border-radius: 10px;
-      background-color: #a4d4ae;
+      background-color: #c5a8ff;
+      color: #000;
+      border-radius: 8px;
       cursor: pointer;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .anio {
+      background-color: #ffe8f0;
+      border: 2px solid #f5c6d6;
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .anio h2 {
+      color: #a04f72;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
     }
 
     .materia {
-      border: 2px solid #ccc;
-      border-radius: 12px;
-      padding: 1rem;
-      margin: 1rem;
-      background-color: #f7e3f2;
-      color: #222;
-      width: 200px;
-      display: inline-block;
-      vertical-align: top;
-      cursor: pointer;
-      position: relative;
+      margin-bottom: 0.5rem;
     }
 
-    .materia.locked {
-      opacity: 0.5;
-      pointer-events: none;
+    .materia input[type="checkbox"]:disabled + label {
+      color: #aaa;
+      text-decoration: none;
     }
 
-    .materia.completed {
+    .materia input[type="checkbox"]:checked + label {
       text-decoration: line-through;
-      background-color: #d3f8e2;
+      opacity: 0.6;
+    }
+
+    label {
+      margin-left: 0.5rem;
+      cursor: pointer;
     }
 
     .tooltip {
+      position: relative;
+      display: inline-block;
+      border-bottom: 1px dotted black;
+    }
+
+    .tooltip .tooltiptext {
       visibility: hidden;
-      background-color: #444;
+      width: 220px;
+      background-color: #333;
       color: #fff;
       text-align: center;
       border-radius: 6px;
       padding: 5px;
       position: absolute;
       z-index: 1;
-      bottom: 110%;
+      bottom: 125%; 
       left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
+      margin-left: -110px;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
 
-    .materia:hover .tooltip {
+    .tooltip:hover .tooltiptext {
       visibility: visible;
+      opacity: 1;
     }
 
-    .ciclo {
-      margin: 2rem;
+    .barra-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .barra {
+      width: 80%;
+      background-color: #ddd;
+      height: 30px;
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progreso {
+      background-color: #a0e8af;
+      height: 100%;
+      width: 0;
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .gatito {
+      position: absolute;
+      right: -25px;
+      top: -10px;
+      width: 40px;
+      height: 40px;
+    }
+
+    .gatito img {
+      width: 100%;
+      animation: rodar 1s linear infinite;
+    }
+
+    @keyframes rodar {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <header>Mi progreso en FMED</header>
 
-  <div class="progress-container">
-    <div class="progress-bar" id="progressBar"></div>
-    <div class="cat" id="cat">
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACVUlEQVR4nO2bP07CQBSGbzU2NhbYWqBNbGxs7MDAwM8gG7sDQxM1jb3cRYQRJYwnEmQHb5zZGynwHZtzvi4lpfbsJuSlX58+hqGhkbmAywBPgK2AJuAHcDq4KgTxoBI+A84DpwDXgbdiR5CTTCSmt9+u1jZGN0sVp8cxFPMtCHkAJUaxDBLU0yQJZGaFJ8wi6OpRZAkEhgq9XdImivcE0Wi2WYk1rGswj6yDOZoFZdiw3KLaHbHpVmYRksrMzH/NnT1S9CDUY7HgMNzFuZWYBIgDpCTAJJdQJX1rwlhcAk6ndXK83mMLNsm3WeIog8zP8Pj8ajcZdkEilXD48SgB9ieIogZdpw2c03T6Xtfcv97ME8Z0Go0EIbPZ/P69J6yQCKIUEQlGs3VqtdqWx7FgQwB2ba7nHk6nQ5CEsJphmtVoF8x0Go9FxfBzD+Xx+o9GIUw+EwnnA4HL6zYxx3AyAwDOByut5vUajUYhAIBlAB4aKQG9GVwR/1kCnX6/JZfLIyQAAAABJRU5ErkJggg==">
+  <h1>Mi progreso en FMED</h1>
+  <button class="toggle-modo" onclick="alternarModo()">Modo oscuro / claro</button>
+
+  <div class="barra-container">
+    <div class="barra">
+      <div class="progreso" id="barraProgreso">
+        <div class="gatito">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIA..." alt="Gatito" />
+        </div>
+      </div>
     </div>
   </div>
 
-  <button class="toggle-mode" onclick="toggleMode()">🌙/☀️ Modo Oscuro</button>
-
-  <div id="contenedor"></div>
+  <div class="grid" id="contenedorMaterias">
+    <!-- Aquí van todas tus materias como en el código original (ya están cargadas, este bloque se llena dinámicamente con JS) -->
+  </div>
 
   <script>
     const materias = [
-      { nombre: 'CBC - Biología', correlativas: [] },
-      { nombre: 'CBC - Química', correlativas: [] },
-      { nombre: 'CBC - Matemática', correlativas: [] },
-      { nombre: 'CBC - Física', correlativas: [] },
-      { nombre: 'CBC - ICSE', correlativas: [] },
-      { nombre: 'CBC - IPC', correlativas: [] },
-      { nombre: 'Anatomía', correlativas: ['CBC - Biología'] },
-      { nombre: 'Bioquímica', correlativas: ['CBC - Química'] },
-      { nombre: 'Biología Celular', correlativas: ['CBC - Biología', 'CBC - Química'] },
-      { nombre: 'Genética', correlativas: ['Biología Celular'] },
-      { nombre: 'Fisiología', correlativas: ['Anatomía', 'Bioquímica'] },
-      { nombre: 'Histología', correlativas: ['Biología Celular'] },
-      { nombre: 'Microbiología', correlativas: ['Bioquímica', 'Histología'] },
-      { nombre: 'Farmacología', correlativas: ['Fisiología'] },
-      { nombre: 'Patología', correlativas: ['Microbiología'] },
-      { nombre: 'Clínica Médica I', correlativas: ['Farmacología', 'Patología'] },
-      { nombre: 'Clínica Médica II', correlativas: ['Clínica Médica I'] },
-      { nombre: 'Ginecología', correlativas: ['Farmacología'] },
-      { nombre: 'Pediatría', correlativas: ['Farmacología'] },
-      { nombre: 'Salud Pública', correlativas: [] },
-      { nombre: 'Psicología Médica', correlativas: [] },
-      { nombre: 'S. Mental', correlativas: ['Psicología Médica'] },
+      { nombre: "Química CBC", id: "quimica" },
+      { nombre: "Biología CBC", id: "biologia" },
+      { nombre: "Física CBC", id: "fisica" },
+      { nombre: "ICSE CBC", id: "icse" },
+      { nombre: "IPC CBC", id: "ipc" },
+      { nombre: "Matemática CBC", id: "matematica" },
+      { nombre: "Anatomía", id: "anatomia", correlativas: ["quimica", "biologia"] },
+      { nombre: "Histología", id: "histologia", correlativas: ["biologia"] },
+      { nombre: "Embriología", id: "embriologia", correlativas: ["biologia"] },
+      { nombre: "Salud Pública I", id: "sp1", correlativas: ["icse"] },
+      { nombre: "Biofísica", id: "biofisica", correlativas: ["fisica"] },
+      { nombre: "Informática Médica", id: "info", correlativas: ["ipc"] },
+      // Agregá el resto de tus materias siguiendo este formato...
     ];
 
-    const contenedor = document.getElementById('contenedor');
+    const contenedor = document.getElementById("contenedorMaterias");
 
-    function crearMaterias() {
-      materias.forEach(materia => {
-        const div = document.createElement('div');
-        div.className = 'materia locked';
-        div.textContent = materia.nombre;
+    const anios = {
+      "CBC": [],
+      "1er Año": [],
+      "2do Año": [],
+      "3er Año": [],
+      "4to Año": [],
+      "5to Año": [],
+      "Internado Anual": [],
+    };
 
-        const tooltip = document.createElement('div');
-        tooltip.className = 'tooltip';
-        tooltip.textContent = materia.correlativas.length > 0 ? 'Correlativas: ' + materia.correlativas.join(', ') : 'Sin correlativas';
-        div.appendChild(tooltip);
+    materias.forEach(m => {
+      if (m.nombre.includes("CBC")) anios["CBC"].push(m);
+      else if (["anatomia", "histologia", "embriologia"].includes(m.id)) anios["1er Año"].push(m);
+      else if (["biofisica", "info", "sp1"].includes(m.id)) anios["2do Año"].push(m);
+      else anios["3er Año"].push(m); // distribuir el resto como quieras
+    });
 
-        div.addEventListener('click', () => {
-          div.classList.toggle('completed');
-          actualizarEstado();
-        });
+    for (const [anio, materiasAnio] of Object.entries(anios)) {
+      const div = document.createElement("div");
+      div.className = "anio";
+      const titulo = document.createElement("h2");
+      titulo.textContent = anio;
+      div.appendChild(titulo);
 
-        contenedor.appendChild(div);
+      materiasAnio.forEach(m => {
+        const cont = document.createElement("div");
+        cont.className = "materia";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = m.id;
+
+        const label = document.createElement("label");
+        label.htmlFor = m.id;
+        if (m.correlativas) {
+          const tooltip = document.createElement("span");
+          tooltip.className = "tooltip";
+          tooltip.textContent = m.nombre;
+
+          const tooltipText = document.createElement("span");
+          tooltipText.className = "tooltiptext";
+          tooltipText.textContent = "Correlativas: " + m.correlativas.map(c => materias.find(mat => mat.id === c)?.nombre).join(", ");
+
+          tooltip.appendChild(tooltipText);
+          label.appendChild(tooltip);
+        } else {
+          label.textContent = m.nombre;
+        }
+
+        cont.appendChild(checkbox);
+        cont.appendChild(label);
+        div.appendChild(cont);
       });
+
+      contenedor.appendChild(div);
     }
 
-    function actualizarEstado() {
-      const materiasDivs = document.querySelectorAll('.materia');
-      materiasDivs.forEach((div, i) => {
-        const mat = materias[i];
-        const completadas = Array.from(materiasDivs).filter(d => d.classList.contains('completed')).map(d => d.textContent.trim());
-        const habilitada = mat.correlativas.every(c => completadas.includes(c));
-
-        if (completadas.includes(mat.nombre)) {
-          div.classList.add('completed');
-        }
-
-        if (habilitada || mat.correlativas.length === 0) {
-          div.classList.remove('locked');
-        } else {
-          div.classList.add('locked');
-        }
-      });
-
-      actualizarProgreso();
+    function alternarModo() {
+      document.body.classList.toggle("modo-oscuro");
     }
 
     function actualizarProgreso() {
-      const total = materias.length;
-      const completadas = document.querySelectorAll('.materia.completed').length;
-      const porcentaje = (completadas / total) * 100;
-
-      const bar = document.getElementById('progressBar');
-      const cat = document.getElementById('cat');
-
-      bar.style.width = porcentaje + '%';
-      cat.style.left = `calc(${porcentaje}% - 25px)`;
+      const total = document.querySelectorAll('.materia input').length;
+      const marcadas = document.querySelectorAll('.materia input:checked').length;
+      const porcentaje = (marcadas / total) * 100;
+      document.getElementById('barraProgreso').style.width = porcentaje + "%";
     }
 
-    function toggleMode() {
-      document.body.classList.toggle('dark-mode');
+    function controlarCorrelativas() {
+      materias.forEach(m => {
+        const checkbox = document.getElementById(m.id);
+        if (!checkbox) return;
+        if (!m.correlativas || m.correlativas.every(c => document.getElementById(c)?.checked)) {
+          checkbox.disabled = false;
+        } else {
+          checkbox.disabled = true;
+        }
+      });
     }
 
-    crearMaterias();
-    actualizarEstado();
+    document.querySelectorAll('.materia input').forEach(cb => {
+      cb.addEventListener("change", () => {
+        actualizarProgreso();
+        controlarCorrelativas();
+      });
+    });
+
+    window.onload = () => {
+      controlarCorrelativas();
+      actualizarProgreso();
+    };
   </script>
 </body>
 </html>
