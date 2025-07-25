@@ -189,7 +189,7 @@
 
       // Agregar al URL
       const encoded = encodeURIComponent(aprobadas.join(","));
-      const newUrl = ${window.location.pathname}?aprobadas=${encoded};
+      const newUrl = `${window.location.pathname}?aprobadas=${encoded}`;
       history.replaceState(null, "", newUrl);
     }
 
